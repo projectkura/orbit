@@ -1,0 +1,17 @@
+{
+  "name": "@orbit/api",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "migrate": "bun x auth migrate --config ./src/lib/auth.ts --yes",
+    "generate": "bun x auth generate --config ./src/lib/auth.ts --output ../../better-auth.schema.sql --yes"
+  },
+  "dependencies": {
+    "@orbit/config": "workspace:*",
+    "@orbit/shared": "workspace:*"
+  }
+}

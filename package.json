@@ -1,26 +1,80 @@
 {
-  "name": "orbit",
+  "name": "orbit-monorepo",
   "version": "0.0.1",
+  "type": "module",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
-    "format": "turbo format",
-    "typecheck": "turbo typecheck"
+    "dev": "bun run --parallel --filter @orbit/web --filter @orbit/api dev",
+    "dev:web": "bun run --cwd apps/web dev",
+    "dev:api": "bun run --cwd apps/api dev",
+    "build:web": "bun run --cwd apps/web build",
+    "build:api": "bun run --cwd apps/api typecheck",
+    "typecheck:web": "bun run --cwd apps/web typecheck",
+    "typecheck:api": "bun run --cwd apps/api typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,yml,yaml,md}\"",
+    "auth:generate": "bun run --cwd apps/api generate",
+    "auth:migrate": "bun run --cwd apps/api migrate",
+    "db:nuke": "node ./scripts/nuke-db.mjs",
+    "db:reset": "bun run db:nuke && bun run auth:migrate"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.4.1",
+    "@better-auth/passkey": "^1.6.9",
+    "@fontsource-variable/nunito-sans": "^5.2.7",
+    "@hugeicons/core-free-icons": "^4.1.1",
+    "@hugeicons/react": "^1.1.6",
+    "@tailwindcss/vite": "^4.1.18",
+    "@tanstack/react-router": "^1.132.0",
+    "@tanstack/react-start": "^1.132.0",
+    "@tanstack/router-plugin": "^1.132.0",
+    "@vercel/edge-config": "^1.4.0",
+    "better-auth": "^1.6.9",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "date-fns": "^4.1.0",
+    "dotenv": "^17.4.2",
+    "embla-carousel-react": "^8.6.0",
+    "input-otp": "^1.4.2",
+    "next-themes": "^0.4.6",
+    "nitro": "latest",
+    "pg": "^8.20.0",
+    "react": "^19.2.4",
+    "react-day-picker": "^9.14.0",
+    "react-dom": "^19.2.4",
+    "react-resizable-panels": "^4.10.0",
+    "recharts": "3.8.0",
+    "shadcn": "^4.4.0",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^4.1.18",
+    "tw-animate-css": "^1.4.0",
+    "vaul": "^1.1.2",
+    "vite-tsconfig-paths": "^5.1.4",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@rsbuild/core": "^2.0.1",
+    "@tanstack/eslint-config": "^0.3.0",
+    "@types/node": "^25.1.0",
+    "@types/pg": "^8.20.0",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "bun-types": "^1.3.13",
+    "eslint": "^9.39.2",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
-    "turbo": "^2.8.17",
-    "typescript": "5.9.3"
+    "typescript": "^5.9.3",
+    "vite": "^7.3.2"
   },
   "packageManager": "bun@1.3.9",
   "engines": {
     "node": ">=20"
-  },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  }
 }

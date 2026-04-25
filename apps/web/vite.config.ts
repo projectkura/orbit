@@ -9,7 +9,7 @@ const config = defineConfig({
   plugins: [
     nitro(),
     viteTsConfigPaths({
-      projects: ["./tsconfig.json"],
+      projects: ["./tsconfig.json", "../../tsconfig.json"],
     }),
     tailwindcss(),
     tanstackStart(),

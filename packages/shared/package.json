@@ -1,0 +1,13 @@
+{
+  "name": "@orbit/shared",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./instance-config": "./src/instance-config.ts",
+    "./internal-jwt": "./src/internal-jwt.ts",
+    "./auth-types": "./src/auth-types.ts",
+    "./emergency-admin": "./src/emergency-admin.ts"
+  }
+}

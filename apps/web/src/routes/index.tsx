@@ -1,19 +1,47 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { Button } from "@workspace/ui/components/button"
+import { useEffect, useState } from "react"
+import { Link, createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/")({ component: App })
+import { Button } from "@/components/button"
+import { apiFetch } from "@/lib/api-client"
 
-function App() {
+export const Route = createFileRoute("/")({ component: LandingPage })
+
+function LandingPage() {
+  const [homePageEnabled, setHomePageEnabled] = useState(true)
+
+  useEffect(() => {
+    let mounted = true
+
+    void apiFetch("/api/public-config")
+      .then(async (response) => {
+        if (!response.ok) {
+          return
+        }
+
+        const data = (await response.json()) as { homePageEnabled?: boolean }
+
+        if (mounted && typeof data.homePageEnabled === "boolean") {
+          setHomePageEnabled(data.homePageEnabled)
+        }
+      })
+      .catch(() => {})
+
+    return () => {
+      mounted = false
+    }
+  }, [])
+
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-      </div>
-    </div>
+    <main className="flex min-h-svh flex-col items-center justify-center gap-4">
+      <h1 className="text-4xl font-bold tracking-tight">Orbit</h1>
+      <p className="text-muted-foreground">FiveM admin panel</p>
+      {homePageEnabled ? (
+        <Button render={<Link to="/auth" />}>Sign in</Button>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Public homepage access is disabled for this instance.
+        </p>
+      )}
+    </main>
   )
 }

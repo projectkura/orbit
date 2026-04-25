@@ -8,59 +8,260 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root"
-import { Route as IndexRouteImport } from "./routes/index"
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as PostAuthRouteImport } from './routes/post-auth'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicConfigRouteImport } from './routes/api/public-config'
+import { Route as ApiOrbitSetupRouteImport } from './routes/api/orbit-setup'
+import { Route as ApiEmergencyAdminRouteImport } from './routes/api/emergency-admin'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
+const PostAuthRoute = PostAuthRouteImport.update({
+  id: '/post-auth',
+  path: '/post-auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicConfigRoute = ApiPublicConfigRouteImport.update({
+  id: '/api/public-config',
+  path: '/api/public-config',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiOrbitSetupRoute = ApiOrbitSetupRouteImport.update({
+  id: '/api/orbit-setup',
+  path: '/api/orbit-setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEmergencyAdminRoute = ApiEmergencyAdminRouteImport.update({
+  id: '/api/emergency-admin',
+  path: '/api/emergency-admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute
+  '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/app': typeof AppRoute
+  '/auth': typeof AuthRoute
+  '/post-auth': typeof PostAuthRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/api/emergency-admin': typeof ApiEmergencyAdminRoute
+  '/api/orbit-setup': typeof ApiOrbitSetupRoute
+  '/api/public-config': typeof ApiPublicConfigRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute
+  '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/app': typeof AppRoute
+  '/auth': typeof AuthRoute
+  '/post-auth': typeof PostAuthRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/api/emergency-admin': typeof ApiEmergencyAdminRoute
+  '/api/orbit-setup': typeof ApiOrbitSetupRoute
+  '/api/public-config': typeof ApiPublicConfigRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  "/": typeof IndexRoute
+  '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/app': typeof AppRoute
+  '/auth': typeof AuthRoute
+  '/post-auth': typeof PostAuthRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/api/emergency-admin': typeof ApiEmergencyAdminRoute
+  '/api/orbit-setup': typeof ApiOrbitSetupRoute
+  '/api/public-config': typeof ApiPublicConfigRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: "/"
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/app'
+    | '/auth'
+    | '/post-auth'
+    | '/admin/settings'
+    | '/api/emergency-admin'
+    | '/api/orbit-setup'
+    | '/api/public-config'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: "/"
-  id: "__root__" | "/"
+  to:
+    | '/'
+    | '/admin'
+    | '/app'
+    | '/auth'
+    | '/post-auth'
+    | '/admin/settings'
+    | '/api/emergency-admin'
+    | '/api/orbit-setup'
+    | '/api/public-config'
+    | '/api/auth/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/app'
+    | '/auth'
+    | '/post-auth'
+    | '/admin/settings'
+    | '/api/emergency-admin'
+    | '/api/orbit-setup'
+    | '/api/public-config'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  AppRoute: typeof AppRoute
+  AuthRoute: typeof AuthRoute
+  PostAuthRoute: typeof PostAuthRoute
+  ApiEmergencyAdminRoute: typeof ApiEmergencyAdminRoute
+  ApiOrbitSetupRoute: typeof ApiOrbitSetupRoute
+  ApiPublicConfigRoute: typeof ApiPublicConfigRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/": {
-      id: "/"
-      path: "/"
-      fullPath: "/"
+    '/post-auth': {
+      id: '/post-auth'
+      path: '/post-auth'
+      fullPath: '/post-auth'
+      preLoaderRoute: typeof PostAuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public-config': {
+      id: '/api/public-config'
+      path: '/api/public-config'
+      fullPath: '/api/public-config'
+      preLoaderRoute: typeof ApiPublicConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/orbit-setup': {
+      id: '/api/orbit-setup'
+      path: '/api/orbit-setup'
+      fullPath: '/api/orbit-setup'
+      preLoaderRoute: typeof ApiOrbitSetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/emergency-admin': {
+      id: '/api/emergency-admin'
+      path: '/api/emergency-admin'
+      fullPath: '/api/emergency-admin'
+      preLoaderRoute: typeof ApiEmergencyAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
+interface AdminRouteChildren {
+  AdminSettingsRoute: typeof AdminSettingsRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminSettingsRoute: AdminSettingsRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
+  AppRoute: AppRoute,
+  AuthRoute: AuthRoute,
+  PostAuthRoute: PostAuthRoute,
+  ApiEmergencyAdminRoute: ApiEmergencyAdminRoute,
+  ApiOrbitSetupRoute: ApiOrbitSetupRoute,
+  ApiPublicConfigRoute: ApiPublicConfigRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
-import type { getRouter } from "./router.tsx"
-import type { createStart } from "@tanstack/react-start"
-declare module "@tanstack/react-start" {
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>

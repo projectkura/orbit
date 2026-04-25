@@ -1,0 +1,66 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: orbit
+      POSTGRES_USER: orbit
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - orbit_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orbit -d orbit"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    image: ${ORBIT_API_IMAGE:-orbit-api:local}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ORBIT_APP_NAME: ${ORBIT_APP_NAME:-Orbit}
+      ORBIT_DEPLOYMENT_MODE: selfhosted
+      ORBIT_CONFIG_MODE: memory
+      ORBIT_API_PORT: 3001
+      ORBIT_API_URL: ${ORBIT_PUBLIC_API_URL}
+      ORBIT_WEB_URL: ${ORBIT_PUBLIC_WEB_URL}
+      ORBIT_COOKIE_DOMAIN: ${ORBIT_COOKIE_DOMAIN:-}
+      DATABASE_URL: postgresql://orbit:${POSTGRES_PASSWORD}@db:5432/orbit
+      DATABASE_SSL: "false"
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-}
+      CFX_CLIENT_ID: ${CFX_CLIENT_ID:-}
+      CFX_CLIENT_SECRET: ${CFX_CLIENT_SECRET:-}
+      CFX_DISCOVERY_URL: ${CFX_DISCOVERY_URL:-}
+      CFX_ISSUER: ${CFX_ISSUER:-}
+      CFX_AUTHORIZATION_URL: ${CFX_AUTHORIZATION_URL:-}
+      CFX_TOKEN_URL: ${CFX_TOKEN_URL:-}
+      CFX_USERINFO_URL: ${CFX_USERINFO_URL:-}
+      CFX_SCOPES: ${CFX_SCOPES:-openid,profile,email}
+    ports:
+      - "3001:3001"
+    volumes:
+      - orbit_runtime:/var/lib/orbit
+
+  web:
+    image: ${ORBIT_WEB_IMAGE:-orbit-web:local}
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      ORBIT_API_URL: http://api:3001
+    ports:
+      - "3000:3000"
+    volumes:
+      - orbit_runtime:/var/lib/orbit
+
+volumes:
+  orbit_postgres_data:
+  orbit_runtime:
