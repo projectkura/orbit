@@ -55,13 +55,13 @@ The API should have its own real public URL because auth and callback flows rely
 Once your Docker images are published, the intended self-host flow is:
 
 ```bash
-docker compose -f docker-compose.images.yml up -d
+docker compose up -d
 ```
 
 Then run migrations once:
 
 ```bash
-docker compose -f docker-compose.images.yml exec api bun run migrate
+docker compose exec api bun run migrate
 ```
 
 Then open Orbit in your browser, create the first account, and finish setup from the admin dashboard.
@@ -196,132 +196,174 @@ If you want OAuth, fill in the relevant provider credentials in the `api` servic
 
 ## Production setup step by step
 
-### 1. Prepare a folder on your server
+For production self-hosting, use one compose file and one root `.env` file on the server.
 
-Example:
+> For the current `0.0` images, set `ORBIT_INTERNAL_JWT_SECRET` and `BETTER_AUTH_SECRET` explicitly.
+
+### 1. Prepare a folder on your server
 
 ```bash
 mkdir -p /opt/orbit
 cd /opt/orbit
 ```
 
-Copy into that folder:
+### 2. Generate secrets
 
-- `docker-compose.images.yml`
-- `apps/web/.env.example`
-- `apps/api/.env.example`
-
-Then create:
+Generate two secrets on the host:
 
 ```bash
-mkdir -p apps/web apps/api
-cp apps/web/.env.example apps/web/.env
-cp apps/api/.env.example apps/api/.env
+openssl rand -hex 32
+openssl rand -hex 32
 ```
 
-### 2. Configure the web env
+Use:
 
-Edit `apps/web/.env`:
+- the first value for `ORBIT_INTERNAL_JWT_SECRET`
+- the second value for `BETTER_AUTH_SECRET`
 
-```env
-ORBIT_API_URL=http://api:3001
-# Optional in Docker: Orbit auto-generates and persists this in /var/lib/orbit.
-# ORBIT_INTERNAL_JWT_SECRET=
-```
-
-#### Notes
-
-- `ORBIT_API_URL` is the internal server-to-server API URL used by the web container.
-- In Docker Compose, `http://api:3001` works because the containers share a network.
-- `ORBIT_INTERNAL_JWT_SECRET` can be omitted in Docker; Orbit will generate and persist it in the shared `orbit_runtime` volume.
-- This value is **runtime config**, not build-time config.
-
-### 3. Configure the api env
-
-Edit `apps/api/.env`:
+### 3. Create `.env`
 
 ```env
-ORBIT_APP_NAME=Orbit
-ORBIT_DEPLOYMENT_MODE=selfhosted
-ORBIT_CONFIG_MODE=memory
-ORBIT_API_PORT=3001
-ORBIT_API_URL=https://api.example.com
-ORBIT_WEB_URL=https://app.example.com
+POSTGRES_PASSWORD=change-me
+ORBIT_PUBLIC_WEB_URL=https://app.example.com
+ORBIT_PUBLIC_API_URL=https://api.example.com
 ORBIT_COOKIE_DOMAIN=.example.com
-# Optional in Docker: Orbit auto-generates and persists this in /var/lib/orbit.
-# ORBIT_INTERNAL_JWT_SECRET=
-# Optional in Docker: Orbit auto-generates and persists this in /var/lib/orbit.
-# BETTER_AUTH_SECRET=
-DATABASE_URL=postgresql://postgres:postgres@db:5432/orbit
-DATABASE_SSL=false
-# Optional: defaults to the hostname from ORBIT_WEB_URL.
-# PASSKEY_RP_ID=
-# Optional: defaults to ORBIT_APP_NAME.
-# PASSKEY_RP_NAME=
-# Optional: defaults to ORBIT_WEB_URL.
-# PASSKEY_ORIGIN=
+ORBIT_APP_NAME=Orbit
+ORBIT_INTERNAL_JWT_SECRET=REPLACE_WITH_SHARED_INTERNAL_JWT_SECRET
+BETTER_AUTH_SECRET=REPLACE_WITH_BETTER_AUTH_SECRET
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+DISCORD_CLIENT_ID=
+DISCORD_CLIENT_SECRET=
+CFX_CLIENT_ID=
+CFX_CLIENT_SECRET=
+CFX_DISCOVERY_URL=
+CFX_ISSUER=
+CFX_AUTHORIZATION_URL=
+CFX_TOKEN_URL=
+CFX_USERINFO_URL=
+CFX_SCOPES=openid,profile,email
 ```
 
-### 4. Add OAuth credentials if needed
+### 4. Create `docker-compose.yml`
 
-Optional providers:
+```yml
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: orbit
+      POSTGRES_USER: orbit
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - orbit_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orbit -d orbit"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
-- Google
-- GitHub
-- Discord
-- Cfx.re
+  api:
+    image: ghcr.io/projectkura/orbit-api:0.0
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ORBIT_APP_NAME: ${ORBIT_APP_NAME:-Orbit}
+      ORBIT_DEPLOYMENT_MODE: selfhosted
+      ORBIT_CONFIG_MODE: memory
+      ORBIT_API_PORT: 3001
+      ORBIT_API_URL: ${ORBIT_PUBLIC_API_URL}
+      ORBIT_WEB_URL: ${ORBIT_PUBLIC_WEB_URL}
+      ORBIT_COOKIE_DOMAIN: ${ORBIT_COOKIE_DOMAIN:-}
+      ORBIT_INTERNAL_JWT_SECRET: ${ORBIT_INTERNAL_JWT_SECRET}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      DATABASE_URL: postgresql://orbit:${POSTGRES_PASSWORD}@db:5432/orbit
+      DATABASE_SSL: "false"
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-}
+      CFX_CLIENT_ID: ${CFX_CLIENT_ID:-}
+      CFX_CLIENT_SECRET: ${CFX_CLIENT_SECRET:-}
+      CFX_DISCOVERY_URL: ${CFX_DISCOVERY_URL:-}
+      CFX_ISSUER: ${CFX_ISSUER:-}
+      CFX_AUTHORIZATION_URL: ${CFX_AUTHORIZATION_URL:-}
+      CFX_TOKEN_URL: ${CFX_TOKEN_URL:-}
+      CFX_USERINFO_URL: ${CFX_USERINFO_URL:-}
+      CFX_SCOPES: ${CFX_SCOPES:-openid,profile,email}
+    ports:
+      - "3001:3001"
+    volumes:
+      - orbit_runtime:/var/lib/orbit
 
-Set the relevant values in `apps/api/.env` if you want those sign-in methods.
+  web:
+    image: ghcr.io/projectkura/orbit-web:0.0
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      ORBIT_API_URL: http://api:3001
+      ORBIT_INTERNAL_JWT_SECRET: ${ORBIT_INTERNAL_JWT_SECRET}
+    ports:
+      - "3000:3000"
+    volumes:
+      - orbit_runtime:/var/lib/orbit
+
+volumes:
+  orbit_postgres_data:
+  orbit_runtime:
+```
 
 ### 5. Start the stack
 
 ```bash
-docker compose -f docker-compose.images.yml up -d
+docker compose up -d
 ```
 
 ### 6. Run database migrations
 
 ```bash
-docker compose -f docker-compose.images.yml exec api bun run migrate
+docker compose exec api bun run migrate
+```
+
+If you previously started Orbit with bad generated secrets, reset the volumes first:
+
+```bash
+docker compose down -v
 ```
 
 ### 7. Finish setup in the browser
 
-- open `https://app.example.com`
-- create the first account
-- first account becomes admin
-- open the admin dashboard
-- configure instance settings
+Open:
+
+- `https://app.example.com/auth`
+
+On a fresh install, Orbit will ask you to create the emergency local `admin` password there. After that, you can sign in and set up OAuth-backed accounts if desired.
 
 ---
 
 ## What each important env does
 
-### Web env
+### Compose env
 
-File: `apps/web/.env`
-
-- `ORBIT_API_URL` — internal API URL used by the web container
-- `ORBIT_INTERNAL_JWT_SECRET` — shared secret used to sign internal web → api tokens; optional in Docker because Orbit can generate and persist it
-
-### API env
-
-File: `apps/api/.env`
-
-- `ORBIT_DEPLOYMENT_MODE`
-  - `selfhosted` for normal self-hosting
-  - `vercel` for the split Vercel-style deployment
-- `ORBIT_CONFIG_MODE`
-  - `memory` for self-hosting
-  - `edge` for Vercel Edge Config mode
-- `ORBIT_API_URL` — public API URL
-- `ORBIT_WEB_URL` — public web URL
+- `POSTGRES_PASSWORD` — password for the bundled Postgres container
+- `ORBIT_PUBLIC_WEB_URL` — public web URL, for example `https://app.example.com`
+- `ORBIT_PUBLIC_API_URL` — public API URL, for example `https://api.example.com`
 - `ORBIT_COOKIE_DOMAIN` — usually `.example.com` when using subdomains
-- `ORBIT_INTERNAL_JWT_SECRET` — optional in Docker; auto-generated and shared with the web container
-- `BETTER_AUTH_SECRET` — optional in Docker; auto-generated for Better Auth and persisted
-- `DATABASE_URL` — Postgres connection string
-- `PASSKEY_RP_ID` — optional; defaults to the hostname from `ORBIT_WEB_URL`
-- `PASSKEY_ORIGIN` — optional; defaults to `ORBIT_WEB_URL`
+- `ORBIT_APP_NAME` — display name of your Orbit instance
+- `ORBIT_INTERNAL_JWT_SECRET` — shared secret used by the web container to authenticate internal requests to the api container
+- `BETTER_AUTH_SECRET` — Better Auth application secret used by the api container
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` — optional Google OAuth
+- `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` — optional GitHub OAuth
+- `DISCORD_CLIENT_ID` / `DISCORD_CLIENT_SECRET` — optional Discord OAuth
+- `CFX_*` — optional Cfx.re OAuth configuration
 
 ---
 
@@ -405,14 +447,14 @@ PASSKEY_ORIGIN=https://app.example.com
 After you publish a new image version, update like this:
 
 ```bash
-docker compose -f docker-compose.images.yml pull
-docker compose -f docker-compose.images.yml up -d
+docker compose pull
+docker compose up -d
 ```
 
 Then run migrations if needed:
 
 ```bash
-docker compose -f docker-compose.images.yml exec api bun run migrate
+docker compose exec api bun run migrate
 ```
 
 ---
@@ -547,7 +589,8 @@ packages/
 
 ## Current Docker files
 
-- `docker-compose.images.yml` — production-style compose using published images
+- `docker-compose.images.yml` — example production-style compose using published images
+- `docker-compose.selfhost.yml` — example single-file self-host compose
 - `docker-compose.yml` — local/source build compose
 - `apps/web/Dockerfile`
 - `apps/api/Dockerfile`
