@@ -70,6 +70,130 @@ The **first created user becomes the admin**.
 
 ---
 
+## Localhost test compose using published images
+
+If you want to test Orbit locally with the published images and a bundled Postgres database, use a single compose file like this.
+
+> For the current `0.0` images, set the auth secrets explicitly instead of relying on auto-generation.
+
+### Generate secrets first
+
+Generate two secrets on the host:
+
+```bash
+openssl rand -hex 32
+openssl rand -hex 32
+```
+
+Use:
+
+- the first value for `ORBIT_INTERNAL_JWT_SECRET`
+- the second value for `BETTER_AUTH_SECRET`
+
+### Example compose
+
+```yml
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: orbit
+      POSTGRES_USER: orbit
+      POSTGRES_PASSWORD: orbit
+    volumes:
+      - orbit_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orbit -d orbit"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    image: ghcr.io/projectkura/orbit-api:0.0
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ORBIT_APP_NAME: Orbit
+      ORBIT_DEPLOYMENT_MODE: selfhosted
+      ORBIT_CONFIG_MODE: memory
+      ORBIT_API_PORT: 3001
+      ORBIT_API_URL: http://localhost:3001
+      ORBIT_WEB_URL: http://localhost:3000
+      ORBIT_COOKIE_DOMAIN: ""
+      ORBIT_INTERNAL_JWT_SECRET: REPLACE_WITH_SHARED_INTERNAL_JWT_SECRET
+      BETTER_AUTH_SECRET: REPLACE_WITH_BETTER_AUTH_SECRET
+      DATABASE_URL: postgresql://orbit:orbit@db:5432/orbit
+      DATABASE_SSL: "false"
+      GOOGLE_CLIENT_ID: ""
+      GOOGLE_CLIENT_SECRET: ""
+      GITHUB_CLIENT_ID: ""
+      GITHUB_CLIENT_SECRET: ""
+      DISCORD_CLIENT_ID: ""
+      DISCORD_CLIENT_SECRET: ""
+      CFX_CLIENT_ID: ""
+      CFX_CLIENT_SECRET: ""
+      CFX_DISCOVERY_URL: ""
+      CFX_ISSUER: ""
+      CFX_AUTHORIZATION_URL: ""
+      CFX_TOKEN_URL: ""
+      CFX_USERINFO_URL: ""
+      CFX_SCOPES: "openid,profile,email"
+    ports:
+      - "3001:3001"
+    volumes:
+      - orbit_runtime:/var/lib/orbit
+
+  web:
+    image: ghcr.io/projectkura/orbit-web:0.0
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      ORBIT_API_URL: http://api:3001
+      ORBIT_INTERNAL_JWT_SECRET: REPLACE_WITH_SHARED_INTERNAL_JWT_SECRET
+    ports:
+      - "3000:3000"
+    volumes:
+      - orbit_runtime:/var/lib/orbit
+
+volumes:
+  orbit_postgres_data:
+  orbit_runtime:
+```
+
+### Start it
+
+```bash
+docker compose up -d
+```
+
+Then run migrations once:
+
+```bash
+docker compose exec api bun run migrate
+```
+
+If you previously started Orbit with mismatched generated secrets, reset the volumes first:
+
+```bash
+docker compose down -v
+```
+
+### First login
+
+Open:
+
+- `http://localhost:3000/auth`
+
+On a fresh install, Orbit will ask you to create the emergency local `admin` password there.
+
+If you want OAuth, fill in the relevant provider credentials in the `api` service environment.
+
+---
+
 ## Production setup step by step
 
 ### 1. Prepare a folder on your server
@@ -479,7 +603,7 @@ Yes. Local development supports running the web and api directly with Bun.
 
 ### What happens on first boot?
 
-The first user account created becomes the instance admin.
+Open `/auth` on your Orbit web URL. On a fresh install, Orbit asks you to create the emergency local `admin` account password there. After that, you can sign in and create your normal OAuth-backed admin account if desired.
 
 ---
 
