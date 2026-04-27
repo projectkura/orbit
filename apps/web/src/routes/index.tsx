@@ -36,7 +36,7 @@ function LandingPage() {
       <h1 className="text-4xl font-bold tracking-tight">Orbit</h1>
       <p className="text-muted-foreground">FiveM admin panel</p>
       {homePageEnabled ? (
-        <Button render={<Link to="/auth" />}>Sign in</Button>
+        <Button render={<Link to="/auth" />}>Login / setup</Button>
       ) : (
         <p className="text-sm text-muted-foreground">
           Public homepage access is disabled for this instance.

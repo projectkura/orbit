@@ -9,7 +9,9 @@ import {
   emergencyAdminEmail,
   emergencyAdminStatusSchema,
   emergencyAdminUsername,
+  setupProgressEventSchema,
   type EmergencyAdminStatus,
+  type SetupProgressEvent,
 } from "@orbit/shared/emergency-admin"
 
 import type { OrbitSessionUser } from "@/lib/auth-types"
@@ -26,6 +28,10 @@ import {
 } from "@/components/card"
 import { Input } from "@/components/input"
 import { Label } from "@/components/label"
+import {
+  Progress,
+  ProgressLabel,
+} from "@/components/progress"
 import { Separator } from "@/components/separator"
 import { Spinner } from "@/components/spinner"
 import { Discord } from "@/components/ui/svgs/discord"
@@ -43,6 +49,8 @@ function AuthPage() {
   const [statusLoading, setStatusLoading] = useState(true)
   const [emergencyPassword, setEmergencyPassword] = useState("")
   const [emergencyPasswordConfirm, setEmergencyPasswordConfirm] = useState("")
+  const [setupEvents, setSetupEvents] = useState<SetupProgressEvent[]>([])
+  const [setupProgress, setSetupProgress] = useState(0)
 
   const user = (session.data?.user as OrbitSessionUser | undefined) ?? null
   const continuePath = user?.role === "admin" ? "/admin" : "/app"
@@ -67,9 +75,14 @@ function AuthPage() {
         if (mounted) {
           setEmergencyStatus(data)
         }
-      } catch {
+      } catch (caughtError) {
         if (mounted) {
-          setEmergencyStatus({ freshInstall: false, hasEmergencyAdmin: false })
+          setError(
+            caughtError instanceof Error
+              ? caughtError.message
+              : "Unable to reach Orbit setup."
+          )
+          setEmergencyStatus(null)
         }
       } finally {
         if (mounted) {
@@ -87,16 +100,17 @@ function AuthPage() {
 
   const isFreshInstall = emergencyStatus?.freshInstall === true
   const showEmergencyAdminSignIn = emergencyStatus?.hasEmergencyAdmin === true
+  const latestSetupEvent = setupEvents.at(-1) ?? null
   const emergencyButtonLabel = useMemo(() => {
     if (pendingAction === "emergency-setup") {
-      return "Creating admin account…"
+      return "Initializing Orbit…"
     }
 
     if (pendingAction === "emergency-signin") {
       return "Signing in…"
     }
 
-    return isFreshInstall ? "Create admin account" : "Sign in as admin"
+    return isFreshInstall ? "Create master admin" : "Sign in as admin"
   }, [isFreshInstall, pendingAction])
 
   async function signInWithProvider(
@@ -163,7 +177,7 @@ function AuthPage() {
 
   async function handleEmergencyAdminSubmit() {
     if (emergencyPassword.length < 8) {
-      setError("Use at least 8 characters for the emergency admin password.")
+      setError("Use at least 8 characters for the admin password.")
       return
     }
 
@@ -173,10 +187,13 @@ function AuthPage() {
     }
 
     setError(null)
-    setPendingAction(isFreshInstall ? "emergency-setup" : "emergency-signin")
 
-    try {
-      if (isFreshInstall) {
+    if (isFreshInstall) {
+      setPendingAction("emergency-setup")
+      setSetupEvents([])
+      setSetupProgress(0)
+
+      try {
         const response = await fetch("/api/emergency-admin", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -185,19 +202,64 @@ function AuthPage() {
         })
 
         if (!response.ok) {
-          throw new Error(await readError(response, "Unable to create admin account."))
+          throw new Error(await readError(response, "Unable to initialize Orbit."))
         }
-      } else {
-        const result = await authClient.signIn.email({
+
+        const finalEvent = await consumeSetupStream(response, (event) => {
+          setSetupProgress(event.progress)
+          setSetupEvents((current) => [...current, event])
+        })
+
+        if (!finalEvent || finalEvent.type !== "complete") {
+          throw new Error(finalEvent?.message ?? "Orbit setup did not finish.")
+        }
+
+        setSetupEvents((current) => [
+          ...current,
+          {
+            type: "stage",
+            phase: "sign-in",
+            message: "Signing in as the master admin.",
+            progress: 100,
+          },
+        ])
+
+        const signInResult = await authClient.signIn.email({
           email: emergencyAdminEmail,
           password: emergencyPassword,
           callbackURL: "/post-auth",
           rememberMe: true,
         })
 
-        if (result.error) {
-          throw new Error(result.error.message ?? "Admin sign in failed.")
+        if (signInResult.error) {
+          throw new Error(signInResult.error.message ?? "Admin sign in failed.")
         }
+
+        window.location.assign("/post-auth")
+        return
+      } catch (caughtError) {
+        setError(
+          caughtError instanceof Error
+            ? caughtError.message
+            : "Orbit setup failed."
+        )
+        setPendingAction(null)
+        return
+      }
+    }
+
+    setPendingAction("emergency-signin")
+
+    try {
+      const result = await authClient.signIn.email({
+        email: emergencyAdminEmail,
+        password: emergencyPassword,
+        callbackURL: "/post-auth",
+        rememberMe: true,
+      })
+
+      if (result.error) {
+        throw new Error(result.error.message ?? "Admin sign in failed.")
       }
 
       window.location.assign("/post-auth")
@@ -256,82 +318,167 @@ function AuthPage() {
 
   if (isFreshInstall) {
     return (
-      <main className="flex min-h-svh items-center justify-center px-6 py-10">
-        <Card className="w-full max-w-md border-border/80 bg-card/95 shadow-lg shadow-black/5">
-          <CardHeader className="space-y-3">
-            <div className="space-y-1">
-              <CardTitle className="text-xl font-semibold tracking-tight">
-                Create the recovery admin
-              </CardTitle>
-              <CardDescription className="text-sm leading-6">
-                Orbit will create a fixed local account named
-                <span className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-[0.7rem] text-foreground">
-                  {emergencyAdminUsername}
-                </span>
-                for break-glass access. Use it sparingly, then create your normal
-                OAuth admin afterwards.
-              </CardDescription>
-            </div>
-          </CardHeader>
+      <main className="min-h-svh bg-[radial-gradient(circle_at_top,rgba(102,51,153,0.08),transparent_35%),linear-gradient(180deg,transparent,rgba(15,23,42,0.03))] px-6 py-10">
+        <div className="mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+          <Card className="border-border/80 bg-card/95 shadow-2xl shadow-black/5">
+            <CardHeader className="space-y-4">
+              <div className="space-y-1">
+                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                  First-run setup
+                </p>
+                <CardTitle className="text-2xl font-semibold tracking-tight">
+                  Create the master admin password
+                </CardTitle>
+                <CardDescription className="max-w-2xl text-sm leading-6">
+                  On a fresh Docker install, Orbit will migrate the database,
+                  create the fixed recovery account
+                  <span className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-[0.7rem] text-foreground">
+                    {emergencyAdminUsername}
+                  </span>
+                  and sign you in automatically.
+                </CardDescription>
+              </div>
+            </CardHeader>
 
-          <CardContent className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="emergency-password">Admin password</Label>
-              <Input
-                id="emergency-password"
-                type="password"
-                autoComplete="new-password"
-                placeholder="Choose a strong password"
-                value={emergencyPassword}
-                onChange={(event) => setEmergencyPassword(event.target.value)}
-              />
-            </div>
+            <CardContent className="space-y-5">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor="emergency-password">Master password</Label>
+                  <Input
+                    id="emergency-password"
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="Choose a strong password"
+                    disabled={pendingAction === "emergency-setup"}
+                    value={emergencyPassword}
+                    onChange={(event) => setEmergencyPassword(event.target.value)}
+                  />
+                </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="emergency-password-confirm">Confirm password</Label>
-              <Input
-                id="emergency-password-confirm"
-                type="password"
-                autoComplete="new-password"
-                placeholder="Repeat the password"
-                value={emergencyPasswordConfirm}
-                onChange={(event) => setEmergencyPasswordConfirm(event.target.value)}
-              />
-            </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="emergency-password-confirm">
+                    Confirm password
+                  </Label>
+                  <Input
+                    id="emergency-password-confirm"
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="Repeat the password"
+                    disabled={pendingAction === "emergency-setup"}
+                    value={emergencyPasswordConfirm}
+                    onChange={(event) =>
+                      setEmergencyPasswordConfirm(event.target.value)
+                    }
+                  />
+                </div>
+              </div>
 
-            <Alert>
-              <AlertTitle>Recommended use</AlertTitle>
-              <AlertDescription>
-                Keep this account as your emergency fallback. Daily admin access
-                should move to a normal OAuth-backed account after setup.
-              </AlertDescription>
-            </Alert>
-
-            {error ? (
-              <Alert variant="destructive">
-                <AlertTitle>Setup failed</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            ) : null}
-          </CardContent>
-
-          <CardFooter className="flex flex-col items-stretch gap-3">
-            <Button
-              size="lg"
-              disabled={pendingAction !== null}
-              onClick={() => void handleEmergencyAdminSubmit()}
-            >
-              {pendingAction === "emergency-setup" ? (
-                <Spinner className="size-3.5" />
+              {emergencyStatus?.statusMessage ? (
+                <Alert
+                  variant={
+                    emergencyStatus.databaseReachable ? "default" : "destructive"
+                  }
+                >
+                  <AlertTitle>
+                    {emergencyStatus.databaseReachable
+                      ? "Automatic database setup"
+                      : "Database unavailable"}
+                  </AlertTitle>
+                  <AlertDescription>
+                    {emergencyStatus.statusMessage}
+                  </AlertDescription>
+                </Alert>
               ) : null}
-              {emergencyButtonLabel}
-            </Button>
-            <p className="text-center text-xs leading-5 text-muted-foreground">
-              This account signs in with its fixed local identity behind the
-              scenes and does not depend on an external OAuth provider.
-            </p>
-          </CardFooter>
-        </Card>
+
+              {error ? (
+                <Alert variant="destructive">
+                  <AlertTitle>Setup failed</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              ) : null}
+
+              <Alert>
+                <AlertTitle>How this account is used</AlertTitle>
+                <AlertDescription>
+                  This is the built-in break-glass admin. Use it for recovery or
+                  initial setup, then keep daily access on your normal accounts.
+                </AlertDescription>
+              </Alert>
+            </CardContent>
+
+            <CardFooter className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs leading-5 text-muted-foreground">
+                No container shell required. Orbit handles the migration and
+                account bootstrap here.
+              </p>
+              <Button
+                size="lg"
+                disabled={pendingAction !== null}
+                onClick={() => void handleEmergencyAdminSubmit()}
+              >
+                {pendingAction === "emergency-setup" ? (
+                  <Spinner className="size-3.5" />
+                ) : null}
+                {emergencyButtonLabel}
+              </Button>
+            </CardFooter>
+          </Card>
+
+          <Card className="border-border/80 bg-card/90">
+            <CardHeader className="space-y-3">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <CardTitle className="text-base font-semibold">
+                    Setup activity
+                  </CardTitle>
+                  <CardDescription>
+                    Live progress from the bootstrap process.
+                  </CardDescription>
+                </div>
+                <span className="rounded-full border border-border/80 px-2.5 py-1 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                  {latestSetupEvent?.phase ?? "idle"}
+                </span>
+              </div>
+
+              <Progress value={setupProgress || 0}>
+                <ProgressLabel>
+                  {latestSetupEvent?.message ?? "Waiting for setup to start."}
+                </ProgressLabel>
+              </Progress>
+              <p className="text-right text-xs text-muted-foreground">
+                {Math.round(setupProgress || 0)}%
+              </p>
+            </CardHeader>
+
+            <CardContent className="space-y-3">
+              {setupEvents.length === 0 ? (
+                <p className="text-sm leading-6 text-muted-foreground">
+                  After you submit the password, Orbit will check the database,
+                  run the auth migrations, create the admin account, and sign you
+                  in.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {setupEvents.map((event, index) => (
+                    <div
+                      key={`${event.phase}-${index}`}
+                      className="rounded-xl border border-border/70 bg-background/70 px-3 py-3"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-sm font-medium text-foreground">
+                          {event.message}
+                        </p>
+                        <span className="text-[0.68rem] uppercase tracking-[0.16em] text-muted-foreground">
+                          {event.progress}%
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </main>
     )
   }
@@ -464,6 +611,77 @@ function AuthPage() {
       </div>
     </main>
   )
+}
+
+async function consumeSetupStream(
+  response: Response,
+  onEvent: (event: SetupProgressEvent) => void
+) {
+  if (!response.body) {
+    throw new Error("Orbit setup did not return a progress stream.")
+  }
+
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ""
+  let finalEvent: SetupProgressEvent | null = null
+
+  while (true) {
+    const { done, value } = await reader.read()
+
+    if (done) {
+      break
+    }
+
+    buffer += decoder.decode(value, { stream: true })
+    const parsed = drainSetupEventBuffer(buffer)
+    buffer = parsed.buffer
+
+    for (const event of parsed.events) {
+      finalEvent = event
+      onEvent(event)
+    }
+  }
+
+  buffer += decoder.decode()
+
+  const parsed = drainSetupEventBuffer(buffer, true)
+
+  for (const event of parsed.events) {
+    finalEvent = event
+    onEvent(event)
+  }
+
+  return finalEvent
+}
+
+function drainSetupEventBuffer(buffer: string, flush = false) {
+  const events: SetupProgressEvent[] = []
+  const lines = buffer.split("\n")
+  const remainder = flush ? "" : (lines.pop() ?? "")
+
+  for (const line of lines) {
+    const trimmed = line.trim()
+
+    if (!trimmed) {
+      continue
+    }
+
+    events.push(setupProgressEventSchema.parse(JSON.parse(trimmed)))
+  }
+
+  if (flush) {
+    const tail = remainder.trim()
+
+    if (tail) {
+      events.push(setupProgressEventSchema.parse(JSON.parse(tail)))
+    }
+  }
+
+  return {
+    buffer: remainder,
+    events,
+  }
 }
 
 async function readError(response: Response, fallback: string) {

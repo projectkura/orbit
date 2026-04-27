@@ -63,7 +63,7 @@ function persistRuntimeSecrets(path: string, secrets: RuntimeSecrets) {
       const fd = openSync(path, "wx")
       writeFileSync(fd, serializeRuntimeSecrets(secrets), "utf8")
       closeSync(fd)
-      return
+      return secrets
     } catch (error) {
       const code = (error as NodeJS.ErrnoException).code
 
@@ -86,6 +86,8 @@ function persistRuntimeSecrets(path: string, secrets: RuntimeSecrets) {
   ) {
     writeFileSync(path, serializeRuntimeSecrets(next), "utf8")
   }
+
+  return next
 }
 
 export function loadWebRuntimeSecrets() {
@@ -93,7 +95,7 @@ export function loadWebRuntimeSecrets() {
   const secretsPath = getRuntimeSecretsPath()
   const existing = readRuntimeSecrets(secretsPath)
 
-  const secrets: RuntimeSecrets = {
+  const generated: RuntimeSecrets = {
     ORBIT_INTERNAL_JWT_SECRET:
       process.env.ORBIT_INTERNAL_JWT_SECRET ??
       existing.ORBIT_INTERNAL_JWT_SECRET ??
@@ -102,10 +104,10 @@ export function loadWebRuntimeSecrets() {
       process.env.BETTER_AUTH_SECRET ?? existing.BETTER_AUTH_SECRET ?? createSecret(),
   }
 
-  if (!process.env.ORBIT_INTERNAL_JWT_SECRET) {
-    persistRuntimeSecrets(secretsPath, secrets)
-  }
+  const resolved = !process.env.ORBIT_INTERNAL_JWT_SECRET
+    ? persistRuntimeSecrets(secretsPath, generated)
+    : generated
 
   process.env.ORBIT_RUNTIME_DIR ??= runtimeDir
-  process.env.ORBIT_INTERNAL_JWT_SECRET ??= secrets.ORBIT_INTERNAL_JWT_SECRET
+  process.env.ORBIT_INTERNAL_JWT_SECRET ??= resolved.ORBIT_INTERNAL_JWT_SECRET
 }

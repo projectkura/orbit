@@ -39,8 +39,12 @@ export async function getEmergencyAdminStatus(): Promise<EmergencyAdminStatus> {
   ])
 
   return emergencyAdminStatusSchema.parse({
+    databaseReachable: true,
+    requiresDatabaseSetup: false,
     freshInstall: totalUserCount === 0,
     hasEmergencyAdmin,
+    canBootstrap: totalUserCount === 0,
+    statusMessage: null,
   })
 }
 

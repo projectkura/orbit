@@ -1,16 +1,18 @@
 import {
-  emergencyAdminEmail,
   emergencyAdminSetupSchema,
-  emergencyAdminUsername,
   instanceConfigUpdateSchema,
 } from "@orbit/shared"
 import { auth } from "./lib/auth"
+import {
+  formatSetupError,
+  getSetupStatus,
+  runEmergencyAdminBootstrap,
+} from "./lib/bootstrap"
 import {
   getRuntimeInstanceConfig,
   saveRuntimeInstanceConfig,
 } from "./lib/config-store"
 import { apiEnv } from "./lib/env"
-import { getEmergencyAdminStatus } from "./lib/emergency-admin"
 import {
   requireAdminSession,
   requireInternalRequest,
@@ -47,6 +49,43 @@ function withCors(response: Response, request: Request) {
 
 function json(data: unknown, init?: ResponseInit) {
   return Response.json(data, init)
+}
+
+function createSetupStream(password: string) {
+  const encoder = new TextEncoder()
+
+  return new Response(
+    new ReadableStream({
+      async start(controller) {
+        const push = (payload: unknown) => {
+          controller.enqueue(encoder.encode(`${JSON.stringify(payload)}\n`))
+        }
+
+        try {
+          await runEmergencyAdminBootstrap(password, (event) => {
+            push(event)
+          })
+        } catch (error) {
+          push({
+            type: "error",
+            phase: "failed",
+            message: formatSetupError(error),
+            progress: 100,
+          })
+        } finally {
+          controller.close()
+        }
+      },
+    }),
+    {
+      headers: {
+        "Cache-Control": "no-store, no-transform",
+        Connection: "keep-alive",
+        "Content-Type": "application/x-ndjson; charset=utf-8",
+        "X-Accel-Buffering": "no",
+      },
+    }
+  )
 }
 
 Bun.serve({
@@ -111,29 +150,12 @@ Bun.serve({
         requireInternalRequest(request, "emergency-admin:manage")
 
         if (request.method === "GET") {
-          return json(await getEmergencyAdminStatus())
+          return json(await getSetupStatus())
         }
 
         if (request.method === "POST") {
           const body = emergencyAdminSetupSchema.parse(await request.json())
-          const status = await getEmergencyAdminStatus()
-
-          if (!status.freshInstall) {
-            return new Response("Emergency admin can only be created on a fresh install", {
-              status: 409,
-            })
-          }
-
-          return auth.api.signUpEmail({
-            asResponse: true,
-            headers: request.headers,
-            body: {
-              name: emergencyAdminUsername,
-              email: emergencyAdminEmail,
-              password: body.password,
-              callbackURL: "/post-auth",
-            },
-          })
+          return createSetupStream(body.password)
         }
 
         return new Response("Method not allowed", { status: 405 })

@@ -15,7 +15,7 @@ services:
       retries: 10
 
   api:
-    image: ${ORBIT_API_IMAGE:-orbit-api:local}
+    image: ${ORBIT_API_IMAGE:-ghcr.io/projectkura/orbit-api:latest}
     restart: unless-stopped
     depends_on:
       db:
@@ -50,7 +50,7 @@ services:
       - orbit_runtime:/var/lib/orbit
 
   web:
-    image: ${ORBIT_WEB_IMAGE:-orbit-web:local}
+    image: ${ORBIT_WEB_IMAGE:-ghcr.io/projectkura/orbit-web:latest}
     restart: unless-stopped
     depends_on:
       - api
