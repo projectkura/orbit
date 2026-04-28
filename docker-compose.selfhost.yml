@@ -28,6 +28,8 @@ services:
       ORBIT_API_URL: ${ORBIT_PUBLIC_API_URL}
       ORBIT_WEB_URL: ${ORBIT_PUBLIC_WEB_URL}
       ORBIT_COOKIE_DOMAIN: ${ORBIT_COOKIE_DOMAIN:-}
+      ORBIT_INTERNAL_JWT_SECRET: ${ORBIT_INTERNAL_JWT_SECRET}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
       DATABASE_URL: postgresql://orbit:${POSTGRES_PASSWORD}@db:5432/orbit
       DATABASE_SSL: "false"
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
@@ -56,6 +58,7 @@ services:
       - api
     environment:
       ORBIT_API_URL: http://api:3001
+      ORBIT_INTERNAL_JWT_SECRET: ${ORBIT_INTERNAL_JWT_SECRET}
     ports:
       - "3000:3000"
     volumes:
