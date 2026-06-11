@@ -9,6 +9,8 @@ import { and, count, desc, eq } from "drizzle-orm"
 import { ZodError } from "zod"
 import { z } from "zod"
 import { randomBytes, createHash } from "node:crypto"
+import { readFileSync } from "node:fs"
+import { join } from "node:path"
 import { handleHealth } from "./routes/health"
 import { handleAuth } from "./routes/auth"
 import { handlePublicConfig } from "./routes/config"
@@ -67,6 +69,11 @@ import {
   warmApiKeyCache,
 } from "./lib/auth/api-key-auth"
 import { logApiRequest } from "./lib/core/request-logger"
+
+let buildInfo = { version: "unknown", commitHash: "unknown" }
+try {
+  buildInfo = JSON.parse(readFileSync(join(import.meta.dirname, "../../build-info.json"), "utf8"))
+} catch {}
 
 function getCorsOrigin(request: Request) {
   const origin = request.headers.get("origin")
@@ -223,6 +230,8 @@ export async function handleRequest(request: Request) {
               configMode: apiEnv.configMode,
               apiUrl: apiEnv.apiUrl,
               webUrl: apiEnv.webUrl,
+              version: buildInfo.version,
+              commitHash: buildInfo.commitHash,
             },
             database: {
               reachable: databaseReachable,

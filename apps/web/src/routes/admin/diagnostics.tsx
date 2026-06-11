@@ -26,7 +26,7 @@ export const Route = createFileRoute('/admin/diagnostics')({
 })
 
 interface DiagnosticsData {
-  instance: { appName: string; configMode: string; apiUrl: string; webUrl: string }
+  instance: { appName: string; configMode: string; apiUrl: string; webUrl: string; version: string; commitHash: string }
   database: {
     reachable: boolean
     migrations: { total: number; pending: number }
@@ -142,6 +142,18 @@ function AdminDiagnosticsPage() {
                   <span className={`size-1.5 rounded-full ${coreUp === 3 ? 'bg-green-500' : coreUp >= 2 ? 'bg-amber-500' : 'bg-red-500'}`} />
                   {coreUp}/3 core services running
                 </span>
+                {data.instance.version && data.instance.version !== 'unknown' && (
+                  <>
+                    <span className='text-xs text-muted-foreground/30'>&middot;</span>
+                    <span className='font-mono text-xs text-muted-foreground'>v{data.instance.version}</span>
+                  </>
+                )}
+                {data.instance.commitHash && data.instance.commitHash !== 'unknown' && (
+                  <>
+                    <span className='text-xs text-muted-foreground/30'>&middot;</span>
+                    <span className='font-mono text-xs text-muted-foreground'>{data.instance.commitHash}</span>
+                  </>
+                )}
                 {data.database.migrations.pending > 0 && (
                   <>
                     <span className='text-xs text-muted-foreground/30'>&middot;</span>

@@ -1,20 +1,12 @@
-name: release
+name: auto-release
 
 on:
-  workflow_dispatch:
-    inputs:
-      bump:
-        description: Version bump type
-        required: true
-        default: patch
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
+  push:
+    branches:
+      - main
 
 concurrency:
-  group: release-main
+  group: auto-release
   cancel-in-progress: false
 
 jobs:
@@ -30,31 +22,51 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      - name: Check if auto-release should run
+        id: check
+        run: |
+          # Skip if HEAD is already tagged (manual release or prior auto-release)
+          if git tag --points-at HEAD 2>/dev/null | grep -q .; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Reason: commit is already tagged"
+            exit 0
+          fi
+          # Skip if this is a version bump commit from release or auto-release
+          SUBJECT=$(git log -1 --pretty=%s)
+          if [[ "$SUBJECT" == "chore: release v"* ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Reason: commit is a version bump"
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
       - name: Set up Node
+        if: steps.check.outputs.skip != 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
       - name: Configure git
+        if: steps.check.outputs.skip != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Make sure local main is up to date
-        run: git pull --ff-only origin main
-
-      - name: Bump version
+      - name: Bump patch version
+        if: steps.check.outputs.skip != 'true'
         id: bump
         run: |
-          VERSION=$(node ./scripts/bump-version.mjs "${{ inputs.bump }}")
+          VERSION=$(node ./scripts/bump-version.mjs patch)
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Commit version bump
+        if: steps.check.outputs.skip != 'true'
         run: |
           git add package.json apps/api/package.json apps/web/package.json packages/config/package.json packages/shared/package.json build-info.json
           git commit -m "chore: release v${{ steps.bump.outputs.version }}"
 
       - name: Amend build info with commit hash
+        if: steps.check.outputs.skip != 'true'
         run: |
           COMMIT=$(git rev-parse --short HEAD)
           node -e "
@@ -66,10 +78,6 @@ jobs:
           git add build-info.json
           git commit --amend --no-edit
 
-      - name: Create tag
-        run: git tag "v${{ steps.bump.outputs.version }}"
-
-      - name: Push commit and tag
-        run: |
-          git push origin HEAD:main
-          git push origin "v${{ steps.bump.outputs.version }}"
+      - name: Push commit
+        if: steps.check.outputs.skip != 'true'
+        run: git push origin HEAD:main

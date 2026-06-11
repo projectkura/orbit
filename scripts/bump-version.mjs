@@ -50,4 +50,9 @@ for (const target of targets) {
   await writeFile(target, `${JSON.stringify(json, null, 2)}\n`)
 }
 
+await writeFile(
+  "build-info.json",
+  `${JSON.stringify({ version, commitHash: "unknown" }, null, 2)}\n`
+)
+
 console.log(version)

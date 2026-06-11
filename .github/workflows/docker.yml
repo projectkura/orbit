@@ -3,8 +3,8 @@ name: docker
 on:
   workflow_dispatch:
   push:
-    tags:
-      - "v*"
+    branches:
+      - main
 
 concurrency:
   group: docker-${{ github.ref }}
@@ -20,6 +20,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Read version and commit hash from build-info.json
+        id: version
+        run: |
+          VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('build-info.json','utf8')).version)")
+          COMMIT=$(git rev-parse --short HEAD)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "commit=$COMMIT" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -40,9 +48,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/orbit-web
           tags: |
-            type=ref,event=tag
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=${{ steps.version.outputs.version }}
             type=raw,value=latest
 
       - name: Extract api metadata
@@ -51,9 +57,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/orbit-api
           tags: |
-            type=ref,event=tag
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=${{ steps.version.outputs.version }}
             type=raw,value=latest
 
       - name: Build and push web image
@@ -66,6 +70,9 @@ jobs:
           platforms: linux/amd64
           tags: ${{ steps.meta_web.outputs.tags }}
           labels: ${{ steps.meta_web.outputs.labels }}
+          build-args: |
+            ORBIT_VERSION=${{ steps.version.outputs.version }}
+            ORBIT_COMMIT=${{ steps.version.outputs.commit }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -79,5 +86,8 @@ jobs:
           platforms: linux/amd64
           tags: ${{ steps.meta_api.outputs.tags }}
           labels: ${{ steps.meta_api.outputs.labels }}
+          build-args: |
+            ORBIT_VERSION=${{ steps.version.outputs.version }}
+            ORBIT_COMMIT=${{ steps.version.outputs.commit }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
