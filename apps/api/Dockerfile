@@ -8,7 +8,7 @@ COPY apps/web/package.json apps/web/package.json
 COPY packages/shared/package.json packages/shared/package.json
 COPY packages/config/package.json packages/config/package.json
 RUN echo "==> bun install for api image (first build can take a few minutes)" \
- && bun install --frozen-lockfile --verbose
+ && bun install --verbose
 COPY . .
 RUN printf '{"version":"%s","commitHash":"%s"}\n' "$ORBIT_VERSION" "$ORBIT_COMMIT" > /app/build-info.json
 WORKDIR /app/apps/api
