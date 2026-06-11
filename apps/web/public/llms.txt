@@ -1,0 +1,27 @@
+# Orbit Documentation
+
+> Orbit is a FiveM admin panel built with Better Auth and a modern React frontend.
+
+## Overview
+
+- [Introduction](https://your-domain.com/docs): Getting started with Orbit — features, architecture, and quick start
+- [API Overview](https://your-domain.com/docs/api): REST API overview, base URL, authentication, and response format
+
+## API Reference
+
+- [Authentication](https://your-domain.com/docs/api/authentication): Session-based auth, API key auth, passkeys, OAuth, and error codes
+- [Workspaces](https://your-domain.com/docs/api/workspaces): Create, read, update, and delete workspaces
+- [API Keys](https://your-domain.com/docs/api/api-keys): Generate, list, and revoke API keys
+
+## FiveM Script
+
+- [FiveM Overview](https://your-domain.com/docs/fivem): What the FiveM resource does, requirements, and architecture
+- [Installation](https://your-domain.com/docs/fivem/installation): Download, install, and verify the FiveM resource
+- [Configuration](https://your-domain.com/docs/fivem/configuration): config.lua options, finding workspace ID, using ConVars
+- [Commands](https://your-domain.com/docs/fivem/commands): Server commands, ace permissions, and custom events
+
+## Self-hosting
+
+- [Self-hosting Overview](https://your-domain.com/docs/self-hosting): Components, prerequisites, and quick start
+- [Docker](https://your-domain.com/docs/self-hosting/docker): Full Docker Compose setup, migrations, and reverse proxy
+- [Environment Variables](https://your-domain.com/docs/self-hosting/env-vars): Complete environment variable reference for all services

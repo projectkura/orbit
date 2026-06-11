@@ -1,4 +1,12 @@
 services:
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - orbit_dragonfly_data:/data
+
   db:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -17,13 +25,16 @@ services:
       dockerfile: ./apps/api/Dockerfile
     restart: unless-stopped
     env_file:
-      - ./apps/api/.env
+      - ./.env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/orbit
+      DATABASE_SSL: "false"
+      DRAGONFLY_URL: redis://dragonfly:6379
     depends_on:
       - db
+      - dragonfly
     ports:
       - "3001:3001"
-    volumes:
-      - orbit_runtime:/var/lib/orbit
 
   web:
     build:
@@ -31,14 +42,14 @@ services:
       dockerfile: ./apps/web/Dockerfile
     restart: unless-stopped
     env_file:
-      - ./apps/web/.env
+      - ./.env
+    environment:
+      ORBIT_API_INTERNAL_URL: http://api:3001
     depends_on:
       - api
     ports:
       - "3000:3000"
-    volumes:
-      - orbit_runtime:/var/lib/orbit
 
 volumes:
   orbit_postgres_data:
-  orbit_runtime:
+  orbit_dragonfly_data:

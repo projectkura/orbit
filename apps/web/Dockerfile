@@ -5,7 +5,8 @@ COPY apps/web/package.json apps/web/package.json
 COPY apps/api/package.json apps/api/package.json
 COPY packages/shared/package.json packages/shared/package.json
 COPY packages/config/package.json packages/config/package.json
-RUN bun install --frozen-lockfile
+RUN echo "==> bun install for web image (first build can take a few minutes)" \
+ && bun install --frozen-lockfile --verbose
 COPY . .
 WORKDIR /app/apps/web
 RUN bun run build

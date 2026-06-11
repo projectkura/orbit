@@ -9,33 +9,99 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as RecoveryRouteImport } from './routes/recovery'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PostAuthRouteImport } from './routes/post-auth'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AppRouteImport } from './routes/app'
-import { Route as AdminRouteImport } from './routes/admin'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as BootRouteImport } from './routes/boot'
+import { Route as AccountRouteImport } from './routes/account'
+import { Route as DocsRouteRouteImport } from './routes/docs/route'
+import { Route as AppRouteRouteImport } from './routes/app/route'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as DocsSplatRouteImport } from './routes/docs/$'
+import { Route as ApiWorkspacesRouteImport } from './routes/api/workspaces'
 import { Route as ApiPublicConfigRouteImport } from './routes/api/public-config'
-import { Route as ApiOrbitSetupRouteImport } from './routes/api/orbit-setup'
-import { Route as ApiEmergencyAdminRouteImport } from './routes/api/emergency-admin'
-import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as ApiMasterAdminRouteImport } from './routes/api/master-admin'
+import { Route as ApiInstanceConfigRouteImport } from './routes/api/instance-config'
+import { Route as ApiEmailStatusRouteImport } from './routes/api/email-status'
+import { Route as AdminWorkspacesRouteImport } from './routes/admin/workspaces'
+import { Route as AdminUsageRouteImport } from './routes/admin/usage'
+import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
+import { Route as AdminOnboardingRouteImport } from './routes/admin/onboarding'
+import { Route as AdminEmailRouteImport } from './routes/admin/email'
+import { Route as AdminDiagnosticsRouteImport } from './routes/admin/diagnostics'
+import { Route as AppIdentifierRouteRouteImport } from './routes/app/$identifier/route'
+import { Route as AppIdentifierUsageRouteImport } from './routes/app/$identifier/usage'
+import { Route as AppIdentifierSettingsRouteImport } from './routes/app/$identifier/settings'
+import { Route as AppIdentifierOverviewRouteImport } from './routes/app/$identifier/overview'
+import { Route as AppIdentifierApiKeysRouteImport } from './routes/app/$identifier/api-keys'
+import { Route as ApiWorkspacesIdentifierRouteImport } from './routes/api/workspaces.$identifier'
+import { Route as ApiResendTemplateTemplateIdRouteImport } from './routes/api/resend-template.$templateId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiAdminWorkspacesRouteImport } from './routes/api/admin.workspaces'
+import { Route as ApiAdminDiagnosticsRouteImport } from './routes/api/admin.diagnostics'
+import { Route as ApiWorkspacesIdentifierUsageRouteImport } from './routes/api/workspaces.$identifier.usage'
+import { Route as ApiWorkspacesIdentifierApiKeysRouteImport } from './routes/api/workspaces.$identifier.api-keys'
+import { Route as ApiUsersMeOnboardingRouteImport } from './routes/api/users/me/onboarding'
+import { Route as ApiAdminWorkspacesWorkspaceIdRouteImport } from './routes/api/admin.workspaces.$workspaceId'
+import { Route as ApiWorkspacesIdentifierDeletionRequestRouteImport } from './routes/api/workspaces.$identifier.deletion.request'
+import { Route as ApiWorkspacesIdentifierDeletionConfirmRouteImport } from './routes/api/workspaces.$identifier.deletion.confirm'
+import { Route as ApiWorkspacesIdentifierAssetsIntentsRouteImport } from './routes/api/workspaces.$identifier.assets.intents'
+import { Route as ApiWorkspacesIdentifierAssetsFinalizeRouteImport } from './routes/api/workspaces.$identifier.assets.finalize'
+import { Route as ApiWorkspacesIdentifierAssetsAssetIdRouteImport } from './routes/api/workspaces.$identifier.assets.$assetId'
+import { Route as ApiWorkspacesIdentifierApiKeysKeyIdRouteImport } from './routes/api/workspaces.$identifier.api-keys.$keyId'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecoveryRoute = RecoveryRouteImport.update({
+  id: '/recovery',
+  path: '/recovery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PostAuthRoute = PostAuthRouteImport.update({
   id: '/post-auth',
   path: '/post-auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppRoute = AppRouteImport.update({
+const BootRoute = BootRouteImport.update({
+  id: '/boot',
+  path: '/boot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsRouteRoute = DocsRouteRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRouteRoute = AppRouteRouteImport.update({
   id: '/app',
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRoute = AdminRouteImport.update({
+const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => rootRouteImport,
@@ -45,68 +111,333 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsIndexRoute = DocsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const DocsSplatRoute = DocsSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const ApiWorkspacesRoute = ApiWorkspacesRouteImport.update({
+  id: '/api/workspaces',
+  path: '/api/workspaces',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicConfigRoute = ApiPublicConfigRouteImport.update({
   id: '/api/public-config',
   path: '/api/public-config',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiOrbitSetupRoute = ApiOrbitSetupRouteImport.update({
-  id: '/api/orbit-setup',
-  path: '/api/orbit-setup',
+const ApiMasterAdminRoute = ApiMasterAdminRouteImport.update({
+  id: '/api/master-admin',
+  path: '/api/master-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiEmergencyAdminRoute = ApiEmergencyAdminRouteImport.update({
-  id: '/api/emergency-admin',
-  path: '/api/emergency-admin',
+const ApiInstanceConfigRoute = ApiInstanceConfigRouteImport.update({
+  id: '/api/instance-config',
+  path: '/api/instance-config',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEmailStatusRoute = ApiEmailStatusRouteImport.update({
+  id: '/api/email-status',
+  path: '/api/email-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminWorkspacesRoute = AdminWorkspacesRouteImport.update({
+  id: '/workspaces',
+  path: '/workspaces',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminUsageRoute = AdminUsageRouteImport.update({
+  id: '/usage',
+  path: '/usage',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminOnboardingRoute = AdminOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminEmailRoute = AdminEmailRouteImport.update({
+  id: '/email',
+  path: '/email',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminDiagnosticsRoute = AdminDiagnosticsRouteImport.update({
+  id: '/diagnostics',
+  path: '/diagnostics',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AppIdentifierRouteRoute = AppIdentifierRouteRouteImport.update({
+  id: '/$identifier',
+  path: '/$identifier',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppIdentifierUsageRoute = AppIdentifierUsageRouteImport.update({
+  id: '/usage',
+  path: '/usage',
+  getParentRoute: () => AppIdentifierRouteRoute,
+} as any)
+const AppIdentifierSettingsRoute = AppIdentifierSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppIdentifierRouteRoute,
+} as any)
+const AppIdentifierOverviewRoute = AppIdentifierOverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
+  getParentRoute: () => AppIdentifierRouteRoute,
+} as any)
+const AppIdentifierApiKeysRoute = AppIdentifierApiKeysRouteImport.update({
+  id: '/api-keys',
+  path: '/api-keys',
+  getParentRoute: () => AppIdentifierRouteRoute,
+} as any)
+const ApiWorkspacesIdentifierRoute = ApiWorkspacesIdentifierRouteImport.update({
+  id: '/$identifier',
+  path: '/$identifier',
+  getParentRoute: () => ApiWorkspacesRoute,
+} as any)
+const ApiResendTemplateTemplateIdRoute =
+  ApiResendTemplateTemplateIdRouteImport.update({
+    id: '/api/resend-template/$templateId',
+    path: '/api/resend-template/$templateId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminWorkspacesRoute = ApiAdminWorkspacesRouteImport.update({
+  id: '/api/admin/workspaces',
+  path: '/api/admin/workspaces',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminDiagnosticsRoute = ApiAdminDiagnosticsRouteImport.update({
+  id: '/api/admin/diagnostics',
+  path: '/api/admin/diagnostics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWorkspacesIdentifierUsageRoute =
+  ApiWorkspacesIdentifierUsageRouteImport.update({
+    id: '/usage',
+    path: '/usage',
+    getParentRoute: () => ApiWorkspacesIdentifierRoute,
+  } as any)
+const ApiWorkspacesIdentifierApiKeysRoute =
+  ApiWorkspacesIdentifierApiKeysRouteImport.update({
+    id: '/api-keys',
+    path: '/api-keys',
+    getParentRoute: () => ApiWorkspacesIdentifierRoute,
+  } as any)
+const ApiUsersMeOnboardingRoute = ApiUsersMeOnboardingRouteImport.update({
+  id: '/api/users/me/onboarding',
+  path: '/api/users/me/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminWorkspacesWorkspaceIdRoute =
+  ApiAdminWorkspacesWorkspaceIdRouteImport.update({
+    id: '/$workspaceId',
+    path: '/$workspaceId',
+    getParentRoute: () => ApiAdminWorkspacesRoute,
+  } as any)
+const ApiWorkspacesIdentifierDeletionRequestRoute =
+  ApiWorkspacesIdentifierDeletionRequestRouteImport.update({
+    id: '/deletion/request',
+    path: '/deletion/request',
+    getParentRoute: () => ApiWorkspacesIdentifierRoute,
+  } as any)
+const ApiWorkspacesIdentifierDeletionConfirmRoute =
+  ApiWorkspacesIdentifierDeletionConfirmRouteImport.update({
+    id: '/deletion/confirm',
+    path: '/deletion/confirm',
+    getParentRoute: () => ApiWorkspacesIdentifierRoute,
+  } as any)
+const ApiWorkspacesIdentifierAssetsIntentsRoute =
+  ApiWorkspacesIdentifierAssetsIntentsRouteImport.update({
+    id: '/assets/intents',
+    path: '/assets/intents',
+    getParentRoute: () => ApiWorkspacesIdentifierRoute,
+  } as any)
+const ApiWorkspacesIdentifierAssetsFinalizeRoute =
+  ApiWorkspacesIdentifierAssetsFinalizeRouteImport.update({
+    id: '/assets/finalize',
+    path: '/assets/finalize',
+    getParentRoute: () => ApiWorkspacesIdentifierRoute,
+  } as any)
+const ApiWorkspacesIdentifierAssetsAssetIdRoute =
+  ApiWorkspacesIdentifierAssetsAssetIdRouteImport.update({
+    id: '/assets/$assetId',
+    path: '/assets/$assetId',
+    getParentRoute: () => ApiWorkspacesIdentifierRoute,
+  } as any)
+const ApiWorkspacesIdentifierApiKeysKeyIdRoute =
+  ApiWorkspacesIdentifierApiKeysKeyIdRouteImport.update({
+    id: '/$keyId',
+    path: '/$keyId',
+    getParentRoute: () => ApiWorkspacesIdentifierApiKeysRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
-  '/app': typeof AppRoute
-  '/auth': typeof AuthRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/app': typeof AppRouteRouteWithChildren
+  '/docs': typeof DocsRouteRouteWithChildren
+  '/account': typeof AccountRoute
+  '/boot': typeof BootRoute
+  '/login': typeof LoginRoute
   '/post-auth': typeof PostAuthRoute
+  '/privacy': typeof PrivacyRoute
+  '/recovery': typeof RecoveryRoute
+  '/terms': typeof TermsRoute
+  '/app/$identifier': typeof AppIdentifierRouteRouteWithChildren
+  '/admin/diagnostics': typeof AdminDiagnosticsRoute
+  '/admin/email': typeof AdminEmailRoute
+  '/admin/onboarding': typeof AdminOnboardingRoute
   '/admin/settings': typeof AdminSettingsRoute
-  '/api/emergency-admin': typeof ApiEmergencyAdminRoute
-  '/api/orbit-setup': typeof ApiOrbitSetupRoute
+  '/admin/usage': typeof AdminUsageRoute
+  '/admin/workspaces': typeof AdminWorkspacesRoute
+  '/api/email-status': typeof ApiEmailStatusRoute
+  '/api/instance-config': typeof ApiInstanceConfigRoute
+  '/api/master-admin': typeof ApiMasterAdminRoute
   '/api/public-config': typeof ApiPublicConfigRoute
+  '/api/workspaces': typeof ApiWorkspacesRouteWithChildren
+  '/docs/$': typeof DocsSplatRoute
+  '/admin/': typeof AdminIndexRoute
+  '/app/': typeof AppIndexRoute
+  '/docs/': typeof DocsIndexRoute
+  '/api/admin/diagnostics': typeof ApiAdminDiagnosticsRoute
+  '/api/admin/workspaces': typeof ApiAdminWorkspacesRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/resend-template/$templateId': typeof ApiResendTemplateTemplateIdRoute
+  '/api/workspaces/$identifier': typeof ApiWorkspacesIdentifierRouteWithChildren
+  '/app/$identifier/api-keys': typeof AppIdentifierApiKeysRoute
+  '/app/$identifier/overview': typeof AppIdentifierOverviewRoute
+  '/app/$identifier/settings': typeof AppIdentifierSettingsRoute
+  '/app/$identifier/usage': typeof AppIdentifierUsageRoute
+  '/api/admin/workspaces/$workspaceId': typeof ApiAdminWorkspacesWorkspaceIdRoute
+  '/api/users/me/onboarding': typeof ApiUsersMeOnboardingRoute
+  '/api/workspaces/$identifier/api-keys': typeof ApiWorkspacesIdentifierApiKeysRouteWithChildren
+  '/api/workspaces/$identifier/usage': typeof ApiWorkspacesIdentifierUsageRoute
+  '/api/workspaces/$identifier/api-keys/$keyId': typeof ApiWorkspacesIdentifierApiKeysKeyIdRoute
+  '/api/workspaces/$identifier/assets/$assetId': typeof ApiWorkspacesIdentifierAssetsAssetIdRoute
+  '/api/workspaces/$identifier/assets/finalize': typeof ApiWorkspacesIdentifierAssetsFinalizeRoute
+  '/api/workspaces/$identifier/assets/intents': typeof ApiWorkspacesIdentifierAssetsIntentsRoute
+  '/api/workspaces/$identifier/deletion/confirm': typeof ApiWorkspacesIdentifierDeletionConfirmRoute
+  '/api/workspaces/$identifier/deletion/request': typeof ApiWorkspacesIdentifierDeletionRequestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
-  '/app': typeof AppRoute
-  '/auth': typeof AuthRoute
+  '/account': typeof AccountRoute
+  '/boot': typeof BootRoute
+  '/login': typeof LoginRoute
   '/post-auth': typeof PostAuthRoute
+  '/privacy': typeof PrivacyRoute
+  '/recovery': typeof RecoveryRoute
+  '/terms': typeof TermsRoute
+  '/app/$identifier': typeof AppIdentifierRouteRouteWithChildren
+  '/admin/diagnostics': typeof AdminDiagnosticsRoute
+  '/admin/email': typeof AdminEmailRoute
+  '/admin/onboarding': typeof AdminOnboardingRoute
   '/admin/settings': typeof AdminSettingsRoute
-  '/api/emergency-admin': typeof ApiEmergencyAdminRoute
-  '/api/orbit-setup': typeof ApiOrbitSetupRoute
+  '/admin/usage': typeof AdminUsageRoute
+  '/admin/workspaces': typeof AdminWorkspacesRoute
+  '/api/email-status': typeof ApiEmailStatusRoute
+  '/api/instance-config': typeof ApiInstanceConfigRoute
+  '/api/master-admin': typeof ApiMasterAdminRoute
   '/api/public-config': typeof ApiPublicConfigRoute
+  '/api/workspaces': typeof ApiWorkspacesRouteWithChildren
+  '/docs/$': typeof DocsSplatRoute
+  '/admin': typeof AdminIndexRoute
+  '/app': typeof AppIndexRoute
+  '/docs': typeof DocsIndexRoute
+  '/api/admin/diagnostics': typeof ApiAdminDiagnosticsRoute
+  '/api/admin/workspaces': typeof ApiAdminWorkspacesRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/resend-template/$templateId': typeof ApiResendTemplateTemplateIdRoute
+  '/api/workspaces/$identifier': typeof ApiWorkspacesIdentifierRouteWithChildren
+  '/app/$identifier/api-keys': typeof AppIdentifierApiKeysRoute
+  '/app/$identifier/overview': typeof AppIdentifierOverviewRoute
+  '/app/$identifier/settings': typeof AppIdentifierSettingsRoute
+  '/app/$identifier/usage': typeof AppIdentifierUsageRoute
+  '/api/admin/workspaces/$workspaceId': typeof ApiAdminWorkspacesWorkspaceIdRoute
+  '/api/users/me/onboarding': typeof ApiUsersMeOnboardingRoute
+  '/api/workspaces/$identifier/api-keys': typeof ApiWorkspacesIdentifierApiKeysRouteWithChildren
+  '/api/workspaces/$identifier/usage': typeof ApiWorkspacesIdentifierUsageRoute
+  '/api/workspaces/$identifier/api-keys/$keyId': typeof ApiWorkspacesIdentifierApiKeysKeyIdRoute
+  '/api/workspaces/$identifier/assets/$assetId': typeof ApiWorkspacesIdentifierAssetsAssetIdRoute
+  '/api/workspaces/$identifier/assets/finalize': typeof ApiWorkspacesIdentifierAssetsFinalizeRoute
+  '/api/workspaces/$identifier/assets/intents': typeof ApiWorkspacesIdentifierAssetsIntentsRoute
+  '/api/workspaces/$identifier/deletion/confirm': typeof ApiWorkspacesIdentifierDeletionConfirmRoute
+  '/api/workspaces/$identifier/deletion/request': typeof ApiWorkspacesIdentifierDeletionRequestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
-  '/app': typeof AppRoute
-  '/auth': typeof AuthRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/app': typeof AppRouteRouteWithChildren
+  '/docs': typeof DocsRouteRouteWithChildren
+  '/account': typeof AccountRoute
+  '/boot': typeof BootRoute
+  '/login': typeof LoginRoute
   '/post-auth': typeof PostAuthRoute
+  '/privacy': typeof PrivacyRoute
+  '/recovery': typeof RecoveryRoute
+  '/terms': typeof TermsRoute
+  '/app/$identifier': typeof AppIdentifierRouteRouteWithChildren
+  '/admin/diagnostics': typeof AdminDiagnosticsRoute
+  '/admin/email': typeof AdminEmailRoute
+  '/admin/onboarding': typeof AdminOnboardingRoute
   '/admin/settings': typeof AdminSettingsRoute
-  '/api/emergency-admin': typeof ApiEmergencyAdminRoute
-  '/api/orbit-setup': typeof ApiOrbitSetupRoute
+  '/admin/usage': typeof AdminUsageRoute
+  '/admin/workspaces': typeof AdminWorkspacesRoute
+  '/api/email-status': typeof ApiEmailStatusRoute
+  '/api/instance-config': typeof ApiInstanceConfigRoute
+  '/api/master-admin': typeof ApiMasterAdminRoute
   '/api/public-config': typeof ApiPublicConfigRoute
+  '/api/workspaces': typeof ApiWorkspacesRouteWithChildren
+  '/docs/$': typeof DocsSplatRoute
+  '/admin/': typeof AdminIndexRoute
+  '/app/': typeof AppIndexRoute
+  '/docs/': typeof DocsIndexRoute
+  '/api/admin/diagnostics': typeof ApiAdminDiagnosticsRoute
+  '/api/admin/workspaces': typeof ApiAdminWorkspacesRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/resend-template/$templateId': typeof ApiResendTemplateTemplateIdRoute
+  '/api/workspaces/$identifier': typeof ApiWorkspacesIdentifierRouteWithChildren
+  '/app/$identifier/api-keys': typeof AppIdentifierApiKeysRoute
+  '/app/$identifier/overview': typeof AppIdentifierOverviewRoute
+  '/app/$identifier/settings': typeof AppIdentifierSettingsRoute
+  '/app/$identifier/usage': typeof AppIdentifierUsageRoute
+  '/api/admin/workspaces/$workspaceId': typeof ApiAdminWorkspacesWorkspaceIdRoute
+  '/api/users/me/onboarding': typeof ApiUsersMeOnboardingRoute
+  '/api/workspaces/$identifier/api-keys': typeof ApiWorkspacesIdentifierApiKeysRouteWithChildren
+  '/api/workspaces/$identifier/usage': typeof ApiWorkspacesIdentifierUsageRoute
+  '/api/workspaces/$identifier/api-keys/$keyId': typeof ApiWorkspacesIdentifierApiKeysKeyIdRoute
+  '/api/workspaces/$identifier/assets/$assetId': typeof ApiWorkspacesIdentifierAssetsAssetIdRoute
+  '/api/workspaces/$identifier/assets/finalize': typeof ApiWorkspacesIdentifierAssetsFinalizeRoute
+  '/api/workspaces/$identifier/assets/intents': typeof ApiWorkspacesIdentifierAssetsIntentsRoute
+  '/api/workspaces/$identifier/deletion/confirm': typeof ApiWorkspacesIdentifierDeletionConfirmRoute
+  '/api/workspaces/$identifier/deletion/request': typeof ApiWorkspacesIdentifierDeletionRequestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -114,53 +445,191 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/app'
-    | '/auth'
+    | '/docs'
+    | '/account'
+    | '/boot'
+    | '/login'
     | '/post-auth'
+    | '/privacy'
+    | '/recovery'
+    | '/terms'
+    | '/app/$identifier'
+    | '/admin/diagnostics'
+    | '/admin/email'
+    | '/admin/onboarding'
     | '/admin/settings'
-    | '/api/emergency-admin'
-    | '/api/orbit-setup'
+    | '/admin/usage'
+    | '/admin/workspaces'
+    | '/api/email-status'
+    | '/api/instance-config'
+    | '/api/master-admin'
     | '/api/public-config'
+    | '/api/workspaces'
+    | '/docs/$'
+    | '/admin/'
+    | '/app/'
+    | '/docs/'
+    | '/api/admin/diagnostics'
+    | '/api/admin/workspaces'
     | '/api/auth/$'
+    | '/api/resend-template/$templateId'
+    | '/api/workspaces/$identifier'
+    | '/app/$identifier/api-keys'
+    | '/app/$identifier/overview'
+    | '/app/$identifier/settings'
+    | '/app/$identifier/usage'
+    | '/api/admin/workspaces/$workspaceId'
+    | '/api/users/me/onboarding'
+    | '/api/workspaces/$identifier/api-keys'
+    | '/api/workspaces/$identifier/usage'
+    | '/api/workspaces/$identifier/api-keys/$keyId'
+    | '/api/workspaces/$identifier/assets/$assetId'
+    | '/api/workspaces/$identifier/assets/finalize'
+    | '/api/workspaces/$identifier/assets/intents'
+    | '/api/workspaces/$identifier/deletion/confirm'
+    | '/api/workspaces/$identifier/deletion/request'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/account'
+    | '/boot'
+    | '/login'
+    | '/post-auth'
+    | '/privacy'
+    | '/recovery'
+    | '/terms'
+    | '/app/$identifier'
+    | '/admin/diagnostics'
+    | '/admin/email'
+    | '/admin/onboarding'
+    | '/admin/settings'
+    | '/admin/usage'
+    | '/admin/workspaces'
+    | '/api/email-status'
+    | '/api/instance-config'
+    | '/api/master-admin'
+    | '/api/public-config'
+    | '/api/workspaces'
+    | '/docs/$'
     | '/admin'
     | '/app'
-    | '/auth'
-    | '/post-auth'
-    | '/admin/settings'
-    | '/api/emergency-admin'
-    | '/api/orbit-setup'
-    | '/api/public-config'
+    | '/docs'
+    | '/api/admin/diagnostics'
+    | '/api/admin/workspaces'
     | '/api/auth/$'
+    | '/api/resend-template/$templateId'
+    | '/api/workspaces/$identifier'
+    | '/app/$identifier/api-keys'
+    | '/app/$identifier/overview'
+    | '/app/$identifier/settings'
+    | '/app/$identifier/usage'
+    | '/api/admin/workspaces/$workspaceId'
+    | '/api/users/me/onboarding'
+    | '/api/workspaces/$identifier/api-keys'
+    | '/api/workspaces/$identifier/usage'
+    | '/api/workspaces/$identifier/api-keys/$keyId'
+    | '/api/workspaces/$identifier/assets/$assetId'
+    | '/api/workspaces/$identifier/assets/finalize'
+    | '/api/workspaces/$identifier/assets/intents'
+    | '/api/workspaces/$identifier/deletion/confirm'
+    | '/api/workspaces/$identifier/deletion/request'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/app'
-    | '/auth'
+    | '/docs'
+    | '/account'
+    | '/boot'
+    | '/login'
     | '/post-auth'
+    | '/privacy'
+    | '/recovery'
+    | '/terms'
+    | '/app/$identifier'
+    | '/admin/diagnostics'
+    | '/admin/email'
+    | '/admin/onboarding'
     | '/admin/settings'
-    | '/api/emergency-admin'
-    | '/api/orbit-setup'
+    | '/admin/usage'
+    | '/admin/workspaces'
+    | '/api/email-status'
+    | '/api/instance-config'
+    | '/api/master-admin'
     | '/api/public-config'
+    | '/api/workspaces'
+    | '/docs/$'
+    | '/admin/'
+    | '/app/'
+    | '/docs/'
+    | '/api/admin/diagnostics'
+    | '/api/admin/workspaces'
     | '/api/auth/$'
+    | '/api/resend-template/$templateId'
+    | '/api/workspaces/$identifier'
+    | '/app/$identifier/api-keys'
+    | '/app/$identifier/overview'
+    | '/app/$identifier/settings'
+    | '/app/$identifier/usage'
+    | '/api/admin/workspaces/$workspaceId'
+    | '/api/users/me/onboarding'
+    | '/api/workspaces/$identifier/api-keys'
+    | '/api/workspaces/$identifier/usage'
+    | '/api/workspaces/$identifier/api-keys/$keyId'
+    | '/api/workspaces/$identifier/assets/$assetId'
+    | '/api/workspaces/$identifier/assets/finalize'
+    | '/api/workspaces/$identifier/assets/intents'
+    | '/api/workspaces/$identifier/deletion/confirm'
+    | '/api/workspaces/$identifier/deletion/request'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRouteWithChildren
-  AppRoute: typeof AppRoute
-  AuthRoute: typeof AuthRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  AppRouteRoute: typeof AppRouteRouteWithChildren
+  DocsRouteRoute: typeof DocsRouteRouteWithChildren
+  AccountRoute: typeof AccountRoute
+  BootRoute: typeof BootRoute
+  LoginRoute: typeof LoginRoute
   PostAuthRoute: typeof PostAuthRoute
-  ApiEmergencyAdminRoute: typeof ApiEmergencyAdminRoute
-  ApiOrbitSetupRoute: typeof ApiOrbitSetupRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RecoveryRoute: typeof RecoveryRoute
+  TermsRoute: typeof TermsRoute
+  ApiEmailStatusRoute: typeof ApiEmailStatusRoute
+  ApiInstanceConfigRoute: typeof ApiInstanceConfigRoute
+  ApiMasterAdminRoute: typeof ApiMasterAdminRoute
   ApiPublicConfigRoute: typeof ApiPublicConfigRoute
+  ApiWorkspacesRoute: typeof ApiWorkspacesRouteWithChildren
+  ApiAdminDiagnosticsRoute: typeof ApiAdminDiagnosticsRoute
+  ApiAdminWorkspacesRoute: typeof ApiAdminWorkspacesRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiResendTemplateTemplateIdRoute: typeof ApiResendTemplateTemplateIdRoute
+  ApiUsersMeOnboardingRoute: typeof ApiUsersMeOnboardingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recovery': {
+      id: '/recovery'
+      path: '/recovery'
+      fullPath: '/recovery'
+      preLoaderRoute: typeof RecoveryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/post-auth': {
       id: '/post-auth'
       path: '/post-auth'
@@ -168,25 +637,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostAuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/boot': {
+      id: '/boot'
+      path: '/boot'
+      fullPath: '/boot'
+      preLoaderRoute: typeof BootRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
       id: '/app'
       path: '/app'
       fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
+      preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
       id: '/admin'
       path: '/admin'
       fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+      preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -196,6 +686,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/': {
+      id: '/docs/'
+      path: '/'
+      fullPath: '/docs/'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/docs/$': {
+      id: '/docs/$'
+      path: '/$'
+      fullPath: '/docs/$'
+      preLoaderRoute: typeof DocsSplatRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/api/workspaces': {
+      id: '/api/workspaces'
+      path: '/api/workspaces'
+      fullPath: '/api/workspaces'
+      preLoaderRoute: typeof ApiWorkspacesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public-config': {
       id: '/api/public-config'
       path: '/api/public-config'
@@ -203,26 +728,117 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicConfigRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/orbit-setup': {
-      id: '/api/orbit-setup'
-      path: '/api/orbit-setup'
-      fullPath: '/api/orbit-setup'
-      preLoaderRoute: typeof ApiOrbitSetupRouteImport
+    '/api/master-admin': {
+      id: '/api/master-admin'
+      path: '/api/master-admin'
+      fullPath: '/api/master-admin'
+      preLoaderRoute: typeof ApiMasterAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/emergency-admin': {
-      id: '/api/emergency-admin'
-      path: '/api/emergency-admin'
-      fullPath: '/api/emergency-admin'
-      preLoaderRoute: typeof ApiEmergencyAdminRouteImport
+    '/api/instance-config': {
+      id: '/api/instance-config'
+      path: '/api/instance-config'
+      fullPath: '/api/instance-config'
+      preLoaderRoute: typeof ApiInstanceConfigRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/email-status': {
+      id: '/api/email-status'
+      path: '/api/email-status'
+      fullPath: '/api/email-status'
+      preLoaderRoute: typeof ApiEmailStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/workspaces': {
+      id: '/admin/workspaces'
+      path: '/workspaces'
+      fullPath: '/admin/workspaces'
+      preLoaderRoute: typeof AdminWorkspacesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/usage': {
+      id: '/admin/usage'
+      path: '/usage'
+      fullPath: '/admin/usage'
+      preLoaderRoute: typeof AdminUsageRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
     '/admin/settings': {
       id: '/admin/settings'
       path: '/settings'
       fullPath: '/admin/settings'
       preLoaderRoute: typeof AdminSettingsRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/onboarding': {
+      id: '/admin/onboarding'
+      path: '/onboarding'
+      fullPath: '/admin/onboarding'
+      preLoaderRoute: typeof AdminOnboardingRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/email': {
+      id: '/admin/email'
+      path: '/email'
+      fullPath: '/admin/email'
+      preLoaderRoute: typeof AdminEmailRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/diagnostics': {
+      id: '/admin/diagnostics'
+      path: '/diagnostics'
+      fullPath: '/admin/diagnostics'
+      preLoaderRoute: typeof AdminDiagnosticsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/app/$identifier': {
+      id: '/app/$identifier'
+      path: '/$identifier'
+      fullPath: '/app/$identifier'
+      preLoaderRoute: typeof AppIdentifierRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/$identifier/usage': {
+      id: '/app/$identifier/usage'
+      path: '/usage'
+      fullPath: '/app/$identifier/usage'
+      preLoaderRoute: typeof AppIdentifierUsageRouteImport
+      parentRoute: typeof AppIdentifierRouteRoute
+    }
+    '/app/$identifier/settings': {
+      id: '/app/$identifier/settings'
+      path: '/settings'
+      fullPath: '/app/$identifier/settings'
+      preLoaderRoute: typeof AppIdentifierSettingsRouteImport
+      parentRoute: typeof AppIdentifierRouteRoute
+    }
+    '/app/$identifier/overview': {
+      id: '/app/$identifier/overview'
+      path: '/overview'
+      fullPath: '/app/$identifier/overview'
+      preLoaderRoute: typeof AppIdentifierOverviewRouteImport
+      parentRoute: typeof AppIdentifierRouteRoute
+    }
+    '/app/$identifier/api-keys': {
+      id: '/app/$identifier/api-keys'
+      path: '/api-keys'
+      fullPath: '/app/$identifier/api-keys'
+      preLoaderRoute: typeof AppIdentifierApiKeysRouteImport
+      parentRoute: typeof AppIdentifierRouteRoute
+    }
+    '/api/workspaces/$identifier': {
+      id: '/api/workspaces/$identifier'
+      path: '/$identifier'
+      fullPath: '/api/workspaces/$identifier'
+      preLoaderRoute: typeof ApiWorkspacesIdentifierRouteImport
+      parentRoute: typeof ApiWorkspacesRoute
+    }
+    '/api/resend-template/$templateId': {
+      id: '/api/resend-template/$templateId'
+      path: '/api/resend-template/$templateId'
+      fullPath: '/api/resend-template/$templateId'
+      preLoaderRoute: typeof ApiResendTemplateTemplateIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -231,29 +847,254 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/workspaces': {
+      id: '/api/admin/workspaces'
+      path: '/api/admin/workspaces'
+      fullPath: '/api/admin/workspaces'
+      preLoaderRoute: typeof ApiAdminWorkspacesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/diagnostics': {
+      id: '/api/admin/diagnostics'
+      path: '/api/admin/diagnostics'
+      fullPath: '/api/admin/diagnostics'
+      preLoaderRoute: typeof ApiAdminDiagnosticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/workspaces/$identifier/usage': {
+      id: '/api/workspaces/$identifier/usage'
+      path: '/usage'
+      fullPath: '/api/workspaces/$identifier/usage'
+      preLoaderRoute: typeof ApiWorkspacesIdentifierUsageRouteImport
+      parentRoute: typeof ApiWorkspacesIdentifierRoute
+    }
+    '/api/workspaces/$identifier/api-keys': {
+      id: '/api/workspaces/$identifier/api-keys'
+      path: '/api-keys'
+      fullPath: '/api/workspaces/$identifier/api-keys'
+      preLoaderRoute: typeof ApiWorkspacesIdentifierApiKeysRouteImport
+      parentRoute: typeof ApiWorkspacesIdentifierRoute
+    }
+    '/api/users/me/onboarding': {
+      id: '/api/users/me/onboarding'
+      path: '/api/users/me/onboarding'
+      fullPath: '/api/users/me/onboarding'
+      preLoaderRoute: typeof ApiUsersMeOnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/workspaces/$workspaceId': {
+      id: '/api/admin/workspaces/$workspaceId'
+      path: '/$workspaceId'
+      fullPath: '/api/admin/workspaces/$workspaceId'
+      preLoaderRoute: typeof ApiAdminWorkspacesWorkspaceIdRouteImport
+      parentRoute: typeof ApiAdminWorkspacesRoute
+    }
+    '/api/workspaces/$identifier/deletion/request': {
+      id: '/api/workspaces/$identifier/deletion/request'
+      path: '/deletion/request'
+      fullPath: '/api/workspaces/$identifier/deletion/request'
+      preLoaderRoute: typeof ApiWorkspacesIdentifierDeletionRequestRouteImport
+      parentRoute: typeof ApiWorkspacesIdentifierRoute
+    }
+    '/api/workspaces/$identifier/deletion/confirm': {
+      id: '/api/workspaces/$identifier/deletion/confirm'
+      path: '/deletion/confirm'
+      fullPath: '/api/workspaces/$identifier/deletion/confirm'
+      preLoaderRoute: typeof ApiWorkspacesIdentifierDeletionConfirmRouteImport
+      parentRoute: typeof ApiWorkspacesIdentifierRoute
+    }
+    '/api/workspaces/$identifier/assets/intents': {
+      id: '/api/workspaces/$identifier/assets/intents'
+      path: '/assets/intents'
+      fullPath: '/api/workspaces/$identifier/assets/intents'
+      preLoaderRoute: typeof ApiWorkspacesIdentifierAssetsIntentsRouteImport
+      parentRoute: typeof ApiWorkspacesIdentifierRoute
+    }
+    '/api/workspaces/$identifier/assets/finalize': {
+      id: '/api/workspaces/$identifier/assets/finalize'
+      path: '/assets/finalize'
+      fullPath: '/api/workspaces/$identifier/assets/finalize'
+      preLoaderRoute: typeof ApiWorkspacesIdentifierAssetsFinalizeRouteImport
+      parentRoute: typeof ApiWorkspacesIdentifierRoute
+    }
+    '/api/workspaces/$identifier/assets/$assetId': {
+      id: '/api/workspaces/$identifier/assets/$assetId'
+      path: '/assets/$assetId'
+      fullPath: '/api/workspaces/$identifier/assets/$assetId'
+      preLoaderRoute: typeof ApiWorkspacesIdentifierAssetsAssetIdRouteImport
+      parentRoute: typeof ApiWorkspacesIdentifierRoute
+    }
+    '/api/workspaces/$identifier/api-keys/$keyId': {
+      id: '/api/workspaces/$identifier/api-keys/$keyId'
+      path: '/$keyId'
+      fullPath: '/api/workspaces/$identifier/api-keys/$keyId'
+      preLoaderRoute: typeof ApiWorkspacesIdentifierApiKeysKeyIdRouteImport
+      parentRoute: typeof ApiWorkspacesIdentifierApiKeysRoute
+    }
   }
 }
 
-interface AdminRouteChildren {
+interface AdminRouteRouteChildren {
+  AdminDiagnosticsRoute: typeof AdminDiagnosticsRoute
+  AdminEmailRoute: typeof AdminEmailRoute
+  AdminOnboardingRoute: typeof AdminOnboardingRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminUsageRoute: typeof AdminUsageRoute
+  AdminWorkspacesRoute: typeof AdminWorkspacesRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
-const AdminRouteChildren: AdminRouteChildren = {
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminDiagnosticsRoute: AdminDiagnosticsRoute,
+  AdminEmailRoute: AdminEmailRoute,
+  AdminOnboardingRoute: AdminOnboardingRoute,
   AdminSettingsRoute: AdminSettingsRoute,
+  AdminUsageRoute: AdminUsageRoute,
+  AdminWorkspacesRoute: AdminWorkspacesRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
+interface AppIdentifierRouteRouteChildren {
+  AppIdentifierApiKeysRoute: typeof AppIdentifierApiKeysRoute
+  AppIdentifierOverviewRoute: typeof AppIdentifierOverviewRoute
+  AppIdentifierSettingsRoute: typeof AppIdentifierSettingsRoute
+  AppIdentifierUsageRoute: typeof AppIdentifierUsageRoute
+}
+
+const AppIdentifierRouteRouteChildren: AppIdentifierRouteRouteChildren = {
+  AppIdentifierApiKeysRoute: AppIdentifierApiKeysRoute,
+  AppIdentifierOverviewRoute: AppIdentifierOverviewRoute,
+  AppIdentifierSettingsRoute: AppIdentifierSettingsRoute,
+  AppIdentifierUsageRoute: AppIdentifierUsageRoute,
+}
+
+const AppIdentifierRouteRouteWithChildren =
+  AppIdentifierRouteRoute._addFileChildren(AppIdentifierRouteRouteChildren)
+
+interface AppRouteRouteChildren {
+  AppIdentifierRouteRoute: typeof AppIdentifierRouteRouteWithChildren
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppIdentifierRouteRoute: AppIdentifierRouteRouteWithChildren,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
+
+interface DocsRouteRouteChildren {
+  DocsSplatRoute: typeof DocsSplatRoute
+  DocsIndexRoute: typeof DocsIndexRoute
+}
+
+const DocsRouteRouteChildren: DocsRouteRouteChildren = {
+  DocsSplatRoute: DocsSplatRoute,
+  DocsIndexRoute: DocsIndexRoute,
+}
+
+const DocsRouteRouteWithChildren = DocsRouteRoute._addFileChildren(
+  DocsRouteRouteChildren,
+)
+
+interface ApiWorkspacesIdentifierApiKeysRouteChildren {
+  ApiWorkspacesIdentifierApiKeysKeyIdRoute: typeof ApiWorkspacesIdentifierApiKeysKeyIdRoute
+}
+
+const ApiWorkspacesIdentifierApiKeysRouteChildren: ApiWorkspacesIdentifierApiKeysRouteChildren =
+  {
+    ApiWorkspacesIdentifierApiKeysKeyIdRoute:
+      ApiWorkspacesIdentifierApiKeysKeyIdRoute,
+  }
+
+const ApiWorkspacesIdentifierApiKeysRouteWithChildren =
+  ApiWorkspacesIdentifierApiKeysRoute._addFileChildren(
+    ApiWorkspacesIdentifierApiKeysRouteChildren,
+  )
+
+interface ApiWorkspacesIdentifierRouteChildren {
+  ApiWorkspacesIdentifierApiKeysRoute: typeof ApiWorkspacesIdentifierApiKeysRouteWithChildren
+  ApiWorkspacesIdentifierUsageRoute: typeof ApiWorkspacesIdentifierUsageRoute
+  ApiWorkspacesIdentifierAssetsAssetIdRoute: typeof ApiWorkspacesIdentifierAssetsAssetIdRoute
+  ApiWorkspacesIdentifierAssetsFinalizeRoute: typeof ApiWorkspacesIdentifierAssetsFinalizeRoute
+  ApiWorkspacesIdentifierAssetsIntentsRoute: typeof ApiWorkspacesIdentifierAssetsIntentsRoute
+  ApiWorkspacesIdentifierDeletionConfirmRoute: typeof ApiWorkspacesIdentifierDeletionConfirmRoute
+  ApiWorkspacesIdentifierDeletionRequestRoute: typeof ApiWorkspacesIdentifierDeletionRequestRoute
+}
+
+const ApiWorkspacesIdentifierRouteChildren: ApiWorkspacesIdentifierRouteChildren =
+  {
+    ApiWorkspacesIdentifierApiKeysRoute:
+      ApiWorkspacesIdentifierApiKeysRouteWithChildren,
+    ApiWorkspacesIdentifierUsageRoute: ApiWorkspacesIdentifierUsageRoute,
+    ApiWorkspacesIdentifierAssetsAssetIdRoute:
+      ApiWorkspacesIdentifierAssetsAssetIdRoute,
+    ApiWorkspacesIdentifierAssetsFinalizeRoute:
+      ApiWorkspacesIdentifierAssetsFinalizeRoute,
+    ApiWorkspacesIdentifierAssetsIntentsRoute:
+      ApiWorkspacesIdentifierAssetsIntentsRoute,
+    ApiWorkspacesIdentifierDeletionConfirmRoute:
+      ApiWorkspacesIdentifierDeletionConfirmRoute,
+    ApiWorkspacesIdentifierDeletionRequestRoute:
+      ApiWorkspacesIdentifierDeletionRequestRoute,
+  }
+
+const ApiWorkspacesIdentifierRouteWithChildren =
+  ApiWorkspacesIdentifierRoute._addFileChildren(
+    ApiWorkspacesIdentifierRouteChildren,
+  )
+
+interface ApiWorkspacesRouteChildren {
+  ApiWorkspacesIdentifierRoute: typeof ApiWorkspacesIdentifierRouteWithChildren
+}
+
+const ApiWorkspacesRouteChildren: ApiWorkspacesRouteChildren = {
+  ApiWorkspacesIdentifierRoute: ApiWorkspacesIdentifierRouteWithChildren,
+}
+
+const ApiWorkspacesRouteWithChildren = ApiWorkspacesRoute._addFileChildren(
+  ApiWorkspacesRouteChildren,
+)
+
+interface ApiAdminWorkspacesRouteChildren {
+  ApiAdminWorkspacesWorkspaceIdRoute: typeof ApiAdminWorkspacesWorkspaceIdRoute
+}
+
+const ApiAdminWorkspacesRouteChildren: ApiAdminWorkspacesRouteChildren = {
+  ApiAdminWorkspacesWorkspaceIdRoute: ApiAdminWorkspacesWorkspaceIdRoute,
+}
+
+const ApiAdminWorkspacesRouteWithChildren =
+  ApiAdminWorkspacesRoute._addFileChildren(ApiAdminWorkspacesRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRouteWithChildren,
-  AppRoute: AppRoute,
-  AuthRoute: AuthRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
+  AppRouteRoute: AppRouteRouteWithChildren,
+  DocsRouteRoute: DocsRouteRouteWithChildren,
+  AccountRoute: AccountRoute,
+  BootRoute: BootRoute,
+  LoginRoute: LoginRoute,
   PostAuthRoute: PostAuthRoute,
-  ApiEmergencyAdminRoute: ApiEmergencyAdminRoute,
-  ApiOrbitSetupRoute: ApiOrbitSetupRoute,
+  PrivacyRoute: PrivacyRoute,
+  RecoveryRoute: RecoveryRoute,
+  TermsRoute: TermsRoute,
+  ApiEmailStatusRoute: ApiEmailStatusRoute,
+  ApiInstanceConfigRoute: ApiInstanceConfigRoute,
+  ApiMasterAdminRoute: ApiMasterAdminRoute,
   ApiPublicConfigRoute: ApiPublicConfigRoute,
+  ApiWorkspacesRoute: ApiWorkspacesRouteWithChildren,
+  ApiAdminDiagnosticsRoute: ApiAdminDiagnosticsRoute,
+  ApiAdminWorkspacesRoute: ApiAdminWorkspacesRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiResendTemplateTemplateIdRoute: ApiResendTemplateTemplateIdRoute,
+  ApiUsersMeOnboardingRoute: ApiUsersMeOnboardingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

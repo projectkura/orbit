@@ -1,0 +1,55 @@
+---
+title: Environment Variables
+description: Reference of Orbit environment variables.
+---
+
+# Environment Variables
+
+Orbit uses a single root `.env` file. Copy `.env.example` and fill in the required values.
+
+## Required
+
+| Variable | Description |
+| --- | --- |
+| `ORBIT_WEB_URL` | Public URL of the web dashboard |
+| `ORBIT_API_URL` | Public URL of the API server |
+| `BETTER_AUTH_SECRET` | Random secret (min 32 chars) for signing tokens |
+| `DATABASE_URL` | PostgreSQL connection string |
+
+## Usually needed
+
+| Variable | Description |
+| --- | --- |
+| `ORBIT_COOKIE_DOMAIN` | Cookie domain when web and API use sibling subdomains (e.g. `.example.com`) |
+| `DATABASE_SSL` | Set to `true` for TLS connections to Postgres |
+| `DRAGONFLY_URL` | Redis-compatible URL for the rate limit cache (default: `redis://dragonfly:6379`) |
+
+## Optional
+
+| Variable | Description |
+| --- | --- |
+| `RESEND_API_KEY` | Resend API key for transactional emails |
+| `ORBIT_R2_ACCOUNT_ID` | Cloudflare account ID for workspace asset storage |
+| `ORBIT_R2_ACCESS_KEY_ID` | R2 access key |
+| `ORBIT_R2_SECRET_ACCESS_KEY` | R2 secret key |
+| `ORBIT_R2_BUCKET` | R2 bucket name |
+| `ORBIT_R2_PUBLIC_URL` | Public CDN URL for workspace logos |
+| OAuth credentials | Discord, GitHub, Google client IDs and secrets |
+
+## Generating `BETTER_AUTH_SECRET`
+
+```bash
+openssl rand -base64 32
+```
+
+## Example `.env`
+
+```env
+ORBIT_WEB_URL=https://app.example.com
+ORBIT_API_URL=https://api.example.com
+BETTER_AUTH_SECRET=change-me-to-a-long-random-secret
+DATABASE_URL=postgresql://postgres:password@db:5432/orbit
+DATABASE_SSL=true
+DRAGONFLY_URL=redis://dragonfly:6379
+ORBIT_COOKIE_DOMAIN=.example.com
+```

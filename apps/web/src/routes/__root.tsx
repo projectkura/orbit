@@ -2,8 +2,10 @@ import { HeadContent, Link, Scripts, createRootRoute } from "@tanstack/react-rou
 
 import appCss from "@/styles/globals.css?url"
 import { Button } from "@/components/button"
+import { Toaster } from "@/components/sonner"
 import { TooltipProvider } from "@/components/tooltip"
 import { ThemeProvider } from "@/hooks/use-theme"
+import { NotificationProvider } from "@/components/shared/notification-center"
 
 export const Route = createRootRoute({
   head: () => ({
@@ -12,8 +14,16 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Orbit" },
       { name: "description", content: "Orbit is a FiveM admin panel with Better Auth." },
+      { name: "apple-mobile-web-app-title", content: "Orbit" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/png", href: "/favicon-96x96.png", sizes: "96x96" },
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "shortcut icon", href: "/favicon.ico" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+      { rel: "manifest", href: "/site.webmanifest" },
+    ],
   }),
   notFoundComponent: () => (
     <main className="flex min-h-svh flex-col items-center justify-center gap-4">
@@ -35,7 +45,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="min-h-svh bg-background text-foreground antialiased">
         <ThemeProvider>
-          <TooltipProvider>{children}</TooltipProvider>
+          <NotificationProvider>
+            <TooltipProvider>{children}</TooltipProvider>
+            <Toaster position="bottom-right" />
+          </NotificationProvider>
         </ThemeProvider>
         <Scripts />
       </body>

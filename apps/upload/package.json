@@ -1,0 +1,18 @@
+{
+  "name": "@orbit/upload-worker",
+  "description": "Deprecated. Workspace uploads are now presigned and finalized by the API.",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "aws4fetch": "^1.0.20",
+    "hono": "^4.6.14"
+  },
+  "devDependencies": {
+    "wrangler": "^3.101.0"
+  }
+}

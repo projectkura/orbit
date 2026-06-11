@@ -1,0 +1,135 @@
+---
+title: Workspaces
+description: Create and manage workspaces via the Orbit API.
+---
+
+# Workspaces
+
+Workspaces are the core unit in Orbit. Each workspace has its own identifier, API keys, rate limits, and usage counters. All workspace management endpoints require a valid session cookie.
+
+---
+
+## List your workspaces
+
+Returns all workspaces you're a member of.
+
+```http
+GET /api/v1/workspaces
+Cookie: <session>
+```
+
+**Response — `200 OK`**
+
+```json
+[
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "identifier": "acme-corp",
+    "name": "Acme Corp",
+    "imageUrl": "https://assets.yourdomain.com/acme-corp/logo.png",
+    "storageTier": "free",
+    "role": "owner",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  }
+]
+```
+
+---
+
+## Get a workspace
+
+```http
+GET /api/v1/workspaces/:identifier
+Cookie: <session>
+```
+
+Returns a single workspace by its identifier. Returns `404` if the workspace doesn't exist or you don't have access.
+
+---
+
+## Create a workspace
+
+```http
+POST /api/v1/workspaces
+Cookie: <session>
+Content-Type: application/json
+
+{
+  "name": "AcmeCorp"
+}
+```
+
+**Request body**
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `name` | string | ✓ | 1–20 alphanumeric characters |
+
+The workspace `identifier` (used in API paths) is generated automatically from the name. Returns `409 Conflict` if the identifier is already taken.
+
+**Response — `201 Created`**
+
+Returns the newly created workspace object.
+
+---
+
+## Update a workspace
+
+```http
+PATCH /api/v1/workspaces/:identifier
+Cookie: <session>
+Content-Type: application/json
+
+{
+  "name": "Acme Corp"
+}
+```
+
+**Request body** (all fields optional)
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | string | New display name |
+| `imageUrl` | string \| null | Avatar image URL, or `null` to remove |
+
+---
+
+## Delete a workspace
+
+Deletion is a two-step process to prevent accidents. First request deletion — you'll receive a confirmation code by email. Then confirm with that code.
+
+### Step 1 — Request deletion
+
+```http
+POST /api/v1/workspaces/:identifier/deletion/request
+Cookie: <session>
+```
+
+An email is sent to your account with a verification code. Returns `{ "sent": true }` on success.
+
+### Step 2 — Confirm deletion
+
+```http
+POST /api/v1/workspaces/:identifier/deletion/confirm
+Cookie: <session>
+Content-Type: application/json
+
+{
+  "code": "<code-from-email>"
+}
+```
+
+The workspace and all its data are permanently deleted. This cannot be undone.
+
+---
+
+## Workspace limits and usage
+
+Returns your workspace's resolved rate limits and live usage counters.
+
+```http
+GET /api/v1/workspaces/:identifier/limits
+Cookie: <session>
+```
+
+See [Rate Limits](/docs/api/rate-limits) for the full response shape and field descriptions.

@@ -1,0 +1,70 @@
+---
+title: Authentication
+description: How to authenticate with the Orbit API using API keys.
+---
+
+# Authentication
+
+The Orbit API uses API keys for all public and integration requests. Pass your key in the `X-API-Key` header on every request — no sessions, no tokens to exchange.
+
+```http
+X-API-Key: orb_api_xxxxxxxxxxxxxxxx
+```
+
+## API key types
+
+Orbit has two key types, each with a distinct prefix so you can tell them apart at a glance:
+
+| Type | Prefix | When to use |
+| --- | --- | --- |
+| **General** | `orb_api_…` | All standard public API access |
+| **Voyager** | `orb_voy_…` | FiveM Voyager server integrations |
+
+### General keys
+
+General keys are the default key type for all public API requests. If you're connecting a custom integration, script, or service to your workspace, use a general key.
+
+```http
+GET /api/v1/w/acme-corp/test
+X-API-Key: orb_api_xxxxxxxxxxxxxxxx
+```
+
+### Voyager keys
+
+Voyager keys are purpose-built for FiveM Voyager server integrations. They use the same `X-API-Key` header but are separated from your general keys so you can revoke them independently and track their usage separately.
+
+```http
+GET /api/v1/w/acme-corp/test
+X-API-Key: orb_voy_xxxxxxxxxxxxxxxx
+```
+
+> Voyager integration is currently in development. Voyager keys can be created now so you're ready when it ships.
+
+## Creating keys
+
+Keys are created from your workspace's **API Keys** page in the dashboard:
+
+1. Open your workspace → **API Keys**
+2. Click **Generate key**
+3. Give the key a name (e.g. `Main production server`)
+4. Select the key type — **General** is the default
+5. Click **Generate Key**
+6. **Copy the secret key immediately** — it is only shown once
+
+Orbit hashes and stores the key on creation. If you lose it, revoke the key and generate a new one.
+
+## Revoking keys
+
+Revocation is immediate. Go to **API Keys**, find the key, and click **Revoke**. The key stops working on the next request — there is no grace period.
+
+## Key scoping
+
+API keys are scoped to a single workspace. A key created in workspace `acme-corp` will only work for requests that include `acme-corp` as the workspace identifier. Passing it against a different workspace returns `404`.
+
+## Errors
+
+| Status | Cause |
+| --- | --- |
+| `401` | `X-API-Key` header is missing or the key is invalid |
+| `404` | Workspace not found, or the key doesn't belong to this workspace |
+| `429` | Rate limit exceeded — see the `Retry-After` header |

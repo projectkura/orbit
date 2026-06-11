@@ -1,0 +1,44 @@
+---
+title: Introduction
+description: Get started with Orbit — workspaces, API keys, and a rate-limited public API, ready to integrate in minutes.
+---
+
+# Welcome to Orbit
+
+Orbit gives your team a private, production-ready control center for managing workspaces and connecting external services through a secure, rate-limited API.
+
+Everything starts in the **dashboard** — create a workspace, generate an API key, and you're ready to make your first authenticated request.
+
+## Get started in 60 seconds
+
+**1. Create a workspace**
+
+Sign in, open the app, and create a workspace. Each workspace gets its own identifier, API keys, and usage counters — completely isolated from other workspaces.
+
+**2. Generate an API key**
+
+Inside your workspace, go to **API Keys** and click **Generate key**. Choose a key type:
+
+- **General** — standard API key for all public API access (`orb_api_…`)
+- **Voyager** — dedicated key for FiveM Voyager server integrations (`orb_voy_…`)
+
+Copy the secret key. **It is only shown once.**
+
+**3. Make your first request**
+
+```bash
+curl -H "X-API-Key: orb_api_xxxxxxxxxxxxxxxx" \
+  https://api.yourdomain.com/api/v1/w/your-workspace/test
+```
+
+A `200 OK` response confirms your key is valid and your workspace is reachable.
+
+## What's in the docs
+
+| Section | What you'll find |
+| --- | --- |
+| [API Overview](/docs/api) | Base URL, response format, error codes |
+| [Authentication](/docs/api/authentication) | How to pass your key, key types explained |
+| [API Keys](/docs/api/api-keys) | Create, list, and revoke keys via the API |
+| [Test Endpoint](/docs/api/test-endpoint) | Verify connectivity — full request & response reference |
+| [Rate Limits](/docs/api/rate-limits) | Per-minute & per-month limits, headers, and handling `429` |

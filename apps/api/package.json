@@ -7,11 +7,14 @@
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
     "typecheck": "tsc --noEmit",
-    "migrate": "bun x auth migrate --config ./src/lib/auth.ts --yes",
-    "generate": "bun x auth generate --config ./src/lib/auth.ts --output ../../better-auth.schema.sql --yes"
+    "db:generate": "drizzle-kit generate --config=./drizzle.config.ts",
+    "db:migrate": "bun src/migrate.ts",
+    "db:studio": "drizzle-kit studio --config=./drizzle.config.ts"
   },
   "dependencies": {
     "@orbit/config": "workspace:*",
-    "@orbit/shared": "workspace:*"
+    "@orbit/shared": "workspace:*",
+    "aws4fetch": "^1.0.20",
+    "ioredis": "^5.10.1"
   }
 }

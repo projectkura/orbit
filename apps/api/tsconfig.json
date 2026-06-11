@@ -1,6 +1,10 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "../../packages/shared/src/**/*.ts",
+    "../../packages/config/src/**/*.ts"
+  ],
   "compilerOptions": {
     "types": ["bun-types", "node"],
     "baseUrl": ".",

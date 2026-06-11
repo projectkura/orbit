@@ -1,18 +1,15 @@
 {
   "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "base-mira",
+  "style": "base-luma",
   "rsc": false,
   "tsx": true,
   "tailwind": {
     "config": "",
-    "css": "src/styles/globals.css",
-    "baseColor": "neutral",
+    "css": "apps/web/src/styles/globals.css",
+    "baseColor": "zinc",
     "cssVariables": true
   },
   "iconLibrary": "hugeicons",
-  "registries": {
-    "@svgl": "https://svgl.app/r/{name}.json"
-  },
   "rtl": false,
   "menuColor": "default-translucent",
   "menuAccent": "subtle",

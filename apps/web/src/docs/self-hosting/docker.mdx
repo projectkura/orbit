@@ -1,0 +1,51 @@
+---
+title: Docker
+description: Deploy Orbit with Docker Compose.
+---
+
+# Docker
+
+The recommended self-host setup is `docker-compose.selfhost.yml` in the repo root.
+
+## Stack
+
+The compose file starts four services:
+
+| Service | Image | Purpose |
+| --- | --- | --- |
+| `db` | `postgres:15-alpine` | PostgreSQL source of truth |
+| `dragonfly` | `docker.dragonflydb.io/dragonflydb/dragonfly` | Rate limit cache |
+| `api` | `ghcr.io/kura-labs/orbit-api` | REST API + auth |
+| `web` | `ghcr.io/kura-labs/orbit-web` | React dashboard |
+
+## Quick start
+
+```bash
+cp .env.example .env
+# edit .env — set ORBIT_WEB_URL, ORBIT_API_URL, BETTER_AUTH_SECRET, POSTGRES_PASSWORD
+docker compose -f docker-compose.selfhost.yml up -d
+```
+
+Migrations run automatically on first boot.
+
+## Reverse proxy
+
+Use Nginx or Caddy to terminate SSL:
+
+```
+api.example.com {
+  reverse_proxy api:3001
+}
+
+app.example.com {
+  reverse_proxy web:3000
+}
+```
+
+## Updating
+
+```bash
+docker compose -f docker-compose.selfhost.yml pull
+docker compose -f docker-compose.selfhost.yml up -d
+docker compose -f docker-compose.selfhost.yml exec api bun run db:migrate
+```

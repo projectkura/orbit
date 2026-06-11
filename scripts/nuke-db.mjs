@@ -1,20 +1,7 @@
-import { existsSync } from "node:fs"
-import { resolve } from "node:path"
-import { config } from "dotenv"
+import { loadRootEnv } from "@orbit/config"
 import { Pool } from "pg"
 
-const candidates = [
-  resolve(process.cwd(), "apps/api/.env.local"),
-  resolve(process.cwd(), "apps/api/.env"),
-  resolve(process.cwd(), ".env.local"),
-  resolve(process.cwd(), ".env"),
-]
-
-for (const path of candidates) {
-  if (existsSync(path)) {
-    config({ path, override: false, quiet: true })
-  }
-}
+loadRootEnv()
 
 if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL is missing")
@@ -34,15 +21,17 @@ const client = await pool.connect()
 
 try {
   const result = await client.query("select current_schema() as schema_name")
-
   const schema = result.rows[0]?.schema_name ?? "public"
-  const safeSchema = String(schema).replaceAll('"', '""')
+  const schemasToReset = Array.from(new Set([schema, "drizzle"]))
+  const safeSchemas = schemasToReset.map((name) => String(name).replaceAll('"', '""'))
 
-  console.log(`Nuking PostgreSQL schema: ${schema}`)
+  console.log(`Nuking PostgreSQL schemas: ${schemasToReset.join(", ")}`)
 
   await client.query("begin")
-  await client.query(`drop schema if exists \"${safeSchema}\" cascade`)
-  await client.query(`create schema \"${safeSchema}\"`)
+  for (const safeSchema of safeSchemas) {
+    await client.query(`drop schema if exists \"${safeSchema}\" cascade`)
+    await client.query(`create schema \"${safeSchema}\"`)
+  }
 
   if (schema === "public") {
     await client.query("grant all on schema public to public")

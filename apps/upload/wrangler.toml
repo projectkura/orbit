@@ -1,0 +1,7 @@
+name = "upload"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+[vars]
+# R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY are set via wrangler secret
+# AUTH_SECRET is set via wrangler secret

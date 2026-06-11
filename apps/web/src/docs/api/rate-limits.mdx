@@ -1,0 +1,123 @@
+---
+title: Rate Limits
+description: Understand your API rate limits, how to read the headers, and what to do when you hit a limit.
+---
+
+# Rate Limits
+
+Every workspace has rate limits that protect the API and ensure fair usage across all integrations. Limits are applied per workspace — not per key — so all keys in the same workspace share the same counters.
+
+## Your limits
+
+| Limit | Free plan | Pro plan | Resets |
+| --- | --- | --- | --- |
+| Requests per minute | 60 | 600 | Every minute |
+| Requests per month | 10,000 | 100,000 | Start of calendar month |
+
+Admins can view your workspace's current limits and live usage from the **Usage** page in the dashboard.
+
+## Rate limit headers
+
+Every public API response includes headers showing your current usage for the per-minute bucket:
+
+```http
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 57
+X-RateLimit-Reset: 1745689200
+```
+
+| Header | Description |
+| --- | --- |
+| `X-RateLimit-Limit` | Your total per-minute request allowance |
+| `X-RateLimit-Remaining` | Requests left in the current window |
+| `X-RateLimit-Reset` | Unix timestamp (seconds) when the counter resets |
+
+Read these headers proactively to avoid hitting limits. If `X-RateLimit-Remaining` is getting low, slow down your request rate.
+
+## When you exceed a limit
+
+The API responds with `429 Too Many Requests`:
+
+```http
+HTTP/1.1 429 Too Many Requests
+Retry-After: 45
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 1745689200
+```
+
+```json
+{
+  "message": "Rate limit exceeded. Try again shortly.",
+  "retryAfter": 45
+}
+```
+
+The `Retry-After` header (and the `retryAfter` field in the body) tells you exactly how many seconds to wait before your next request will succeed.
+
+### Monthly limit exceeded
+
+If you've exhausted your monthly allowance, the response message changes:
+
+```json
+{
+  "message": "Monthly rate limit exceeded.",
+  "retryAfter": 1296000
+}
+```
+
+Monthly limits reset at the start of each calendar month. If you regularly hit the monthly limit, consider upgrading your plan or contacting your admin for a custom limit.
+
+## Handling rate limit errors
+
+The recommended pattern is to check the `Retry-After` header and pause for exactly that many seconds:
+
+```javascript
+async function callApi(url, options) {
+  const response = await fetch(url, options)
+
+  if (response.status === 429) {
+    const retryAfter = parseInt(response.headers.get("Retry-After") ?? "60", 10)
+    await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000))
+    return callApi(url, options) // retry once
+  }
+
+  return response
+}
+```
+
+If you're making batch requests, add a small delay between calls to stay well within your per-minute limit.
+
+## Checking your current usage
+
+You can fetch your resolved limits and live usage counters from the dashboard API (requires a session):
+
+```http
+GET /api/v1/workspaces/:identifier/limits
+Cookie: <session>
+```
+
+**Response:**
+
+```json
+{
+  "limits": {
+    "apiRequestsPerMinute": 60,
+    "apiRequestsPerMonth": 10000
+  },
+  "usage": {
+    "apiRequestsPerMinute": {
+      "limit": 60,
+      "used": 12,
+      "remaining": 48,
+      "resetAt": 1745689200
+    },
+    "apiRequestsPerMonth": {
+      "limit": 10000,
+      "used": 342,
+      "remaining": 9658,
+      "resetAt": 1748735999
+    }
+  }
+}
+```

@@ -1,0 +1,164 @@
+---
+title: Test Endpoint
+description: Verify your API key, workspace, and rate limit status with a single request.
+---
+
+# Test Endpoint
+
+```
+POST /api/v1/w/:identifier/test
+```
+
+The test endpoint is the fastest way to confirm your integration is working. It validates your API key, resolves your workspace, applies rate limiting, and returns your current rate limit counters — all in one request.
+
+Use it to:
+- Verify a new API key is valid before deploying
+- Check your workspace identifier is correct
+- Confirm your API server is reachable
+- Inspect your current rate limit usage
+
+---
+
+## Request
+
+Replace `:identifier` with your workspace's identifier (shown in the workspace URL and on the Overview page).
+
+```bash
+curl -X POST \
+  -H "X-API-Key: orb_api_xxxxxxxxxxxxxxxx" \
+  https://api.yourdomain.com/api/v1/w/acme-corp/test
+```
+
+**Headers**
+
+| Header | Required | Description |
+| --- | --- | --- |
+| `X-API-Key` | ✓ | Your API key (`orb_api_…` or `orb_voy_…`) |
+
+No request body is needed.
+
+---
+
+## Response — `200 OK`
+
+```json
+{
+  "ok": true,
+  "workspace": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "Acme Corp",
+    "identifier": "acme-corp"
+  },
+  "rateLimit": {
+    "limit": 60,
+    "remaining": 59,
+    "resetAt": 1745689200000
+  }
+}
+```
+
+**Response fields**
+
+| Field | Description |
+| --- | --- |
+| `ok` | Always `true` on success |
+| `workspace.id` | Internal UUID of the workspace |
+| `workspace.name` | Display name of the workspace |
+| `workspace.identifier` | URL-safe identifier used in API paths |
+| `rateLimit.limit` | Your per-minute request limit |
+| `rateLimit.remaining` | Requests remaining in the current minute |
+| `rateLimit.resetAt` | Unix timestamp (ms) when the per-minute counter resets |
+
+**Response headers**
+
+Every successful response also includes rate limit headers:
+
+```http
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 59
+X-RateLimit-Reset: 1745689200
+```
+
+`X-RateLimit-Reset` is a Unix timestamp in **seconds** (the `rateLimit.resetAt` field in the body is milliseconds).
+
+---
+
+## Failure responses
+
+### `401 Unauthorized`
+
+Your API key is missing or invalid.
+
+```json
+{ "message": "API key is required." }
+```
+
+```json
+{ "message": "Invalid API key." }
+```
+
+Fix: check that the `X-API-Key` header is present and contains the full secret key (not the preview shown in the dashboard).
+
+---
+
+### `404 Not Found`
+
+The workspace identifier doesn't match the workspace the key belongs to.
+
+```json
+{ "message": "Workspace not found." }
+```
+
+Fix: confirm the `:identifier` in the URL matches the workspace where you created the key. A key created in `acme-corp` cannot authenticate against `other-workspace`.
+
+---
+
+### `429 Too Many Requests`
+
+You've exceeded your per-minute or per-month limit.
+
+**Per-minute limit exceeded:**
+
+```json
+{
+  "message": "Rate limit exceeded. Try again shortly.",
+  "retryAfter": 45
+}
+```
+
+**Per-month limit exceeded:**
+
+```json
+{
+  "message": "Monthly rate limit exceeded.",
+  "retryAfter": 1296000
+}
+```
+
+Both `429` responses include a `Retry-After` header with the same value as `retryAfter` in the body (seconds to wait).
+
+See [Rate Limits](/docs/api/rate-limits) for your plan's limits and how to handle `429` errors.
+
+---
+
+## Integration health check example
+
+```bash
+#!/bin/bash
+API_URL="https://api.yourdomain.com"
+API_KEY="orb_api_xxxxxxxxxxxxxxxx"
+WORKSPACE="acme-corp"
+
+response=$(curl -s -o /dev/null -w "%{http_code}" \
+  -X POST \
+  -H "X-API-Key: $API_KEY" \
+  "$API_URL/api/v1/w/$WORKSPACE/test")
+
+case "$response" in
+  200) echo "✓ API key and workspace are valid" ;;
+  401) echo "✗ Invalid or missing API key" ;;
+  404) echo "✗ Workspace not found" ;;
+  429) echo "⚠ Rate limited — wait before retrying" ;;
+  *)   echo "✗ Unexpected status: $response" ;;
+esac
+```
