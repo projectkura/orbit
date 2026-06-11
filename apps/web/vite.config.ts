@@ -31,7 +31,7 @@ const config = defineConfig({
         ],
       }),
     },
-    nitro({ preset: "cloudflare-pages" }),
+    nitro({ preset: "cloudflare-worker" }),
     viteTsConfigPaths({
       projects: ["./tsconfig.json", "../../tsconfig.json"],
     }),
