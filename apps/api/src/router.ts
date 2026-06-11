@@ -9,8 +9,6 @@ import { and, count, desc, eq } from "drizzle-orm"
 import { ZodError } from "zod"
 import { z } from "zod"
 import { randomBytes, createHash } from "node:crypto"
-import { readFileSync } from "node:fs"
-import { join } from "node:path"
 import { handleHealth } from "./routes/health"
 import { handleAuth } from "./routes/auth"
 import { handlePublicConfig } from "./routes/config"
@@ -70,10 +68,10 @@ import {
 } from "./lib/auth/api-key-auth"
 import { logApiRequest } from "./lib/core/request-logger"
 
-let buildInfo = { version: "unknown", commitHash: "unknown" }
-try {
-  buildInfo = JSON.parse(readFileSync(join(import.meta.dirname, "../../build-info.json"), "utf8"))
-} catch {}
+let buildInfo = {
+  version: process.env.ORBIT_VERSION ?? "unknown",
+  commitHash: process.env.ORBIT_COMMIT ?? "unknown",
+}
 
 function getCorsOrigin(request: Request) {
   const origin = request.headers.get("origin")

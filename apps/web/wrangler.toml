@@ -1,0 +1,10 @@
+name = "orbit-web"
+main = ".output/server/index.mjs"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+[site]
+bucket = ".output/public"
+
+[vars]
+ASSETS_BUCKET = "orbit-web-assets"

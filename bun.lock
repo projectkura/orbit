@@ -67,7 +67,11 @@
         "@orbit/config": "workspace:*",
         "@orbit/shared": "workspace:*",
         "aws4fetch": "^1.0.20",
+        "hono": "^4.6.14",
         "ioredis": "^5.10.1",
+      },
+      "devDependencies": {
+        "wrangler": "^3.101.0",
       },
     },
     "apps/upload": {
@@ -96,6 +100,9 @@
         "remark-gfm": "^4.0.1",
         "remark-mdx-frontmatter": "^5.2.0",
         "shiki": "^4.1.0",
+      },
+      "devDependencies": {
+        "wrangler": "^3.101.0",
       },
     },
     "packages/config": {
