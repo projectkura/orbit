@@ -11,3 +11,13 @@ binding = "ASSETS"
 rules = [
   { type = "ESModule", globs = ["**/*.mjs", "**/*.js"] },
 ]
+
+[observability.logs]
+enabled = true
+invocation_logs = true
+
+# Hyperdrive binding is configured in nitro.config.ts (cloudflare.wrangler.hyperdrive).
+# Minimum required env vars — set these via `wrangler secret` or dashboard:
+#   wrangler secret put BETTER_AUTH_SECRET
+#   wrangler secret put ORBIT_WEB_URL
+# ORBIT_API_URL defaults to ORBIT_WEB_URL (same runtime), so it's not needed.

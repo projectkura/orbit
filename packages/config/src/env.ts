@@ -113,75 +113,93 @@ export function getApiEnv(): ApiEnv {
     return cachedApiEnv
   }
 
-  const port = Number(normalizeEnvValue(process.env.ORBIT_API_PORT) ?? "3001")
-  const defaultApiUrl = !isProduction() ? `http://localhost:${port}` : undefined
-  const defaultWebUrl = !isProduction() ? "http://localhost:3000" : undefined
+  try {
+    const port = Number(normalizeEnvValue(process.env.ORBIT_API_PORT) ?? "3001")
+    const defaultApiUrl = !isProduction() ? `http://localhost:${port}` : normalizeEnvValue(process.env.ORBIT_WEB_URL)
+    const defaultWebUrl = !isProduction() ? "http://localhost:3000" : undefined
 
-  const parsed = parseWithSchema("API", apiEnvSchema, {
-    ORBIT_API_PORT: port,
-    ORBIT_APP_NAME: normalizeEnvValue(process.env.ORBIT_APP_NAME) ?? "Orbit",
-    ORBIT_CONFIG_MODE:
-      normalizeEnvValue(process.env.ORBIT_CONFIG_MODE) ?? "memory",
-    ORBIT_API_URL: normalizeEnvValue(process.env.ORBIT_API_URL) ?? defaultApiUrl,
-    ORBIT_WEB_URL: normalizeEnvValue(process.env.ORBIT_WEB_URL) ?? defaultWebUrl,
-    ORBIT_COOKIE_DOMAIN: normalizeEnvValue(process.env.ORBIT_COOKIE_DOMAIN),
-    DATABASE_URL: normalizeEnvValue(process.env.DATABASE_URL),
-    DATABASE_SSL: normalizeEnvValue(process.env.DATABASE_SSL) ?? "false",
-    BETTER_AUTH_SECRET: normalizeEnvValue(process.env.BETTER_AUTH_SECRET),
-    PASSKEY_RP_ID: normalizeEnvValue(process.env.PASSKEY_RP_ID),
-    PASSKEY_RP_NAME: normalizeEnvValue(process.env.PASSKEY_RP_NAME),
-    PASSKEY_ORIGIN: normalizeEnvValue(process.env.PASSKEY_ORIGIN),
-    RESEND_API_KEY: normalizeEnvValue(process.env.RESEND_API_KEY),
-    ORBIT_VERCEL_EDGE_CONFIG: normalizeEnvValue(
-      process.env.ORBIT_VERCEL_EDGE_CONFIG
-    ),
-    ORBIT_VERCEL_EDGE_CONFIG_STORE_ID: normalizeEnvValue(
-      process.env.ORBIT_VERCEL_EDGE_CONFIG_STORE_ID
-    ),
-    ORBIT_VERCEL_API_TOKEN: normalizeEnvValue(
-      process.env.ORBIT_VERCEL_API_TOKEN
-    ),
-    ORBIT_VERCEL_EDGE_CONFIG_ITEM_KEY:
-      normalizeEnvValue(process.env.ORBIT_VERCEL_EDGE_CONFIG_ITEM_KEY) ??
-      "instance-config",
-    ORBIT_R2_ACCOUNT_ID: normalizeEnvValue(process.env.ORBIT_R2_ACCOUNT_ID),
-    ORBIT_R2_ACCESS_KEY_ID: normalizeEnvValue(
-      process.env.ORBIT_R2_ACCESS_KEY_ID
-    ),
-    ORBIT_R2_SECRET_ACCESS_KEY: normalizeEnvValue(
-      process.env.ORBIT_R2_SECRET_ACCESS_KEY
-    ),
-    ORBIT_R2_BUCKET: normalizeEnvValue(process.env.ORBIT_R2_BUCKET),
-    ORBIT_R2_PUBLIC_URL: normalizeEnvValue(process.env.ORBIT_R2_PUBLIC_URL),
-    DRAGONFLY_URL: normalizeEnvValue(process.env.DRAGONFLY_URL),
-  })
+    const parsed = parseWithSchema("API", apiEnvSchema, {
+      ORBIT_API_PORT: port,
+      ORBIT_APP_NAME: normalizeEnvValue(process.env.ORBIT_APP_NAME) ?? "Orbit",
+      ORBIT_CONFIG_MODE:
+        normalizeEnvValue(process.env.ORBIT_CONFIG_MODE) ?? "memory",
+      ORBIT_API_URL: normalizeEnvValue(process.env.ORBIT_API_URL) ?? defaultApiUrl,
+      ORBIT_WEB_URL: normalizeEnvValue(process.env.ORBIT_WEB_URL) ?? defaultWebUrl,
+      ORBIT_COOKIE_DOMAIN: normalizeEnvValue(process.env.ORBIT_COOKIE_DOMAIN),
+      DATABASE_URL: normalizeEnvValue(process.env.DATABASE_URL),
+      DATABASE_SSL: normalizeEnvValue(process.env.DATABASE_SSL) ?? "false",
+      BETTER_AUTH_SECRET: normalizeEnvValue(process.env.BETTER_AUTH_SECRET),
+      PASSKEY_RP_ID: normalizeEnvValue(process.env.PASSKEY_RP_ID),
+      PASSKEY_RP_NAME: normalizeEnvValue(process.env.PASSKEY_RP_NAME),
+      PASSKEY_ORIGIN: normalizeEnvValue(process.env.PASSKEY_ORIGIN),
+      RESEND_API_KEY: normalizeEnvValue(process.env.RESEND_API_KEY),
+      ORBIT_VERCEL_EDGE_CONFIG: normalizeEnvValue(
+        process.env.ORBIT_VERCEL_EDGE_CONFIG
+      ),
+      ORBIT_VERCEL_EDGE_CONFIG_STORE_ID: normalizeEnvValue(
+        process.env.ORBIT_VERCEL_EDGE_CONFIG_STORE_ID
+      ),
+      ORBIT_VERCEL_API_TOKEN: normalizeEnvValue(
+        process.env.ORBIT_VERCEL_API_TOKEN
+      ),
+      ORBIT_VERCEL_EDGE_CONFIG_ITEM_KEY:
+        normalizeEnvValue(process.env.ORBIT_VERCEL_EDGE_CONFIG_ITEM_KEY) ??
+        "instance-config",
+      ORBIT_R2_ACCOUNT_ID: normalizeEnvValue(process.env.ORBIT_R2_ACCOUNT_ID),
+      ORBIT_R2_ACCESS_KEY_ID: normalizeEnvValue(
+        process.env.ORBIT_R2_ACCESS_KEY_ID
+      ),
+      ORBIT_R2_SECRET_ACCESS_KEY: normalizeEnvValue(
+        process.env.ORBIT_R2_SECRET_ACCESS_KEY
+      ),
+      ORBIT_R2_BUCKET: normalizeEnvValue(process.env.ORBIT_R2_BUCKET),
+      ORBIT_R2_PUBLIC_URL: normalizeEnvValue(process.env.ORBIT_R2_PUBLIC_URL),
+      DRAGONFLY_URL: normalizeEnvValue(process.env.DRAGONFLY_URL),
+    })
 
-  const webHost = new URL(parsed.ORBIT_WEB_URL).hostname
+    const webHost = new URL(parsed.ORBIT_WEB_URL).hostname
 
-  cachedApiEnv = {
-    port: parsed.ORBIT_API_PORT,
-    appName: parsed.ORBIT_APP_NAME,
-    configMode: resolveConfigMode(parsed.ORBIT_CONFIG_MODE),
-    apiUrl: parsed.ORBIT_API_URL,
-    webUrl: parsed.ORBIT_WEB_URL,
-    cookieDomain: parsed.ORBIT_COOKIE_DOMAIN,
-    databaseUrl: parsed.DATABASE_URL,
-    databaseSsl: parsed.DATABASE_SSL === "true",
-    betterAuthSecret: parsed.BETTER_AUTH_SECRET,
-    passkeyRpId: parsed.PASSKEY_RP_ID ?? webHost,
-    passkeyRpName: parsed.PASSKEY_RP_NAME ?? parsed.ORBIT_APP_NAME,
-    passkeyOrigin: parsed.PASSKEY_ORIGIN ?? parsed.ORBIT_WEB_URL,
-    resendApiKey: parsed.RESEND_API_KEY,
-    vercelEdgeConfig: parsed.ORBIT_VERCEL_EDGE_CONFIG,
-    vercelEdgeConfigStoreId: parsed.ORBIT_VERCEL_EDGE_CONFIG_STORE_ID,
-    vercelApiToken: parsed.ORBIT_VERCEL_API_TOKEN,
-    vercelEdgeConfigItemKey: parsed.ORBIT_VERCEL_EDGE_CONFIG_ITEM_KEY,
-    r2AccountId: parsed.ORBIT_R2_ACCOUNT_ID,
-    r2AccessKeyId: parsed.ORBIT_R2_ACCESS_KEY_ID,
-    r2SecretAccessKey: parsed.ORBIT_R2_SECRET_ACCESS_KEY,
-    r2Bucket: parsed.ORBIT_R2_BUCKET,
-    r2PublicUrl: parsed.ORBIT_R2_PUBLIC_URL,
-    dragonflyUrl: parsed.DRAGONFLY_URL,
+    cachedApiEnv = {
+      port: parsed.ORBIT_API_PORT,
+      appName: parsed.ORBIT_APP_NAME,
+      configMode: resolveConfigMode(parsed.ORBIT_CONFIG_MODE),
+      apiUrl: parsed.ORBIT_API_URL,
+      webUrl: parsed.ORBIT_WEB_URL,
+      cookieDomain: parsed.ORBIT_COOKIE_DOMAIN,
+      databaseUrl: parsed.DATABASE_URL,
+      databaseSsl: parsed.DATABASE_SSL === "true",
+      betterAuthSecret: parsed.BETTER_AUTH_SECRET,
+      passkeyRpId: parsed.PASSKEY_RP_ID ?? webHost,
+      passkeyRpName: parsed.PASSKEY_RP_NAME ?? parsed.ORBIT_APP_NAME,
+      passkeyOrigin: parsed.PASSKEY_ORIGIN ?? parsed.ORBIT_WEB_URL,
+      resendApiKey: parsed.RESEND_API_KEY,
+      vercelEdgeConfig: parsed.ORBIT_VERCEL_EDGE_CONFIG,
+      vercelEdgeConfigStoreId: parsed.ORBIT_VERCEL_EDGE_CONFIG_STORE_ID,
+      vercelApiToken: parsed.ORBIT_VERCEL_API_TOKEN,
+      vercelEdgeConfigItemKey: parsed.ORBIT_VERCEL_EDGE_CONFIG_ITEM_KEY,
+      r2AccountId: parsed.ORBIT_R2_ACCOUNT_ID,
+      r2AccessKeyId: parsed.ORBIT_R2_ACCESS_KEY_ID,
+      r2SecretAccessKey: parsed.ORBIT_R2_SECRET_ACCESS_KEY,
+      r2Bucket: parsed.ORBIT_R2_BUCKET,
+      r2PublicUrl: parsed.ORBIT_R2_PUBLIC_URL,
+      dragonflyUrl: parsed.DRAGONFLY_URL,
+    }
+  } catch (err) {
+    console.warn("[env] Failed to validate API env, using defaults:", err)
+    cachedApiEnv = {
+      port: 3001,
+      appName: "Orbit",
+      configMode: "memory",
+      apiUrl: "http://localhost:3001",
+      webUrl: "http://localhost:3000",
+      databaseUrl: "",
+      databaseSsl: false,
+      betterAuthSecret: "fallback-secret",
+      passkeyRpId: "localhost",
+      passkeyRpName: "Orbit",
+      passkeyOrigin: "http://localhost:3000",
+      vercelEdgeConfigItemKey: "instance-config",
+    }
   }
 
   return cachedApiEnv
