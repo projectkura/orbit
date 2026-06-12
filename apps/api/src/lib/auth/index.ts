@@ -220,11 +220,16 @@ const genericOAuthProviders = cfxConfigured
     ]
   : []
 
-export const auth = betterAuth({
-  appName: orbitConfig.appName,
-  baseURL: orbitConfig.appUrl,
-  secret: apiEnv.betterAuthSecret,
-  trustedOrigins: [orbitConfig.webUrl, orbitConfig.appUrl],
+let _auth: ReturnType<typeof betterAuth> | null = null
+
+export function getAuth() {
+  if (_auth) return _auth
+
+  _auth = betterAuth({
+    appName: orbitConfig.appName,
+    baseURL: orbitConfig.appUrl,
+    secret: apiEnv.betterAuthSecret,
+    trustedOrigins: [orbitConfig.webUrl, orbitConfig.appUrl],
   crossSubDomainCookies: apiEnv.cookieDomain
     ? {
         enabled: true,
@@ -411,4 +416,13 @@ export const auth = betterAuth({
       origin: apiEnv.passkeyOrigin,
     }),
   ],
+  })
+
+  return _auth
+}
+
+export const auth = new Proxy({} as ReturnType<typeof betterAuth>, {
+  get(_, prop) {
+    return Reflect.get(getAuth(), prop)
+  },
 })

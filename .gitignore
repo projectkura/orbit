@@ -34,3 +34,6 @@ npm-debug.log*
 *.pem
 .agents/
 .orbit-runtime/
+
+# Cloudflare Wrangler
+.wrangler

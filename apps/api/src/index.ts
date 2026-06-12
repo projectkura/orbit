@@ -1,15 +1,6 @@
 import { Hono } from "hono"
-import { runDatabaseMigrations } from "./lib/db/migrations"
-import { apiEnv } from "./lib/core/env"
 import { handleRequest } from "./router"
 import { getCorsOrigin } from "./routes/utils"
-import { getDragonflyClient } from "./lib/core/dragonfly"
-
-await runDatabaseMigrations()
-
-// Eagerly connect to Dragonfly on startup so the health check reflects the
-// real connection state from the first request.
-getDragonflyClient()
 
 const app = new Hono()
 
@@ -33,7 +24,16 @@ app.all("*", async (c) => {
   return handleRequest(request)
 })
 
+const isCloudflareWorker = typeof globalThis.caches !== "undefined"
+
+if (!isCloudflareWorker) {
+  const { runDatabaseMigrations } = await import("./lib/db/migrations")
+  const { getDragonflyClient } = await import("./lib/core/dragonfly")
+  await runDatabaseMigrations()
+  getDragonflyClient()
+}
+
 export default {
-  port: apiEnv.port,
+  port: Number(process.env.PORT) || 3001,
   fetch: app.fetch,
 }

@@ -34,7 +34,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/web
-          command: deploy
+          command: deploy --config .output/server/wrangler.json
 
   deploy-api:
     runs-on: blacksmith-2vcpu-ubuntu-2204

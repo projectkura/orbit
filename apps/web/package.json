@@ -7,7 +7,9 @@
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "wrangler deploy",
+    "build:cf": "vite build",
+    "deploy": "wrangler deploy --config .output/server/wrangler.json",
+    "deploy:local": "bun run build:cf && wrangler deploy --config .output/server/wrangler.json",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -3,6 +3,14 @@ main = "src/index.ts"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 
+# Placeholder values — override with `wrangler secret put` after first deploy
 [vars]
-ORBIT_VERSION = "unknown"
-ORBIT_COMMIT = "unknown"
+DATABASE_URL = "postgres://placeholder:placeholder@localhost/orbit"
+DATABASE_SSL = "false"
+BETTER_AUTH_SECRET = "placeholder-secret-replace-me"
+ORBIT_API_PORT = "3001"
+ORBIT_APP_NAME = "Orbit"
+ORBIT_CONFIG_MODE = "memory"
+ORBIT_API_URL = "https://api.orbit.walteria.net"
+ORBIT_WEB_URL = "https://orbit.walteria.net"
+ORBIT_VERCEL_EDGE_CONFIG_ITEM_KEY = "instance-config"

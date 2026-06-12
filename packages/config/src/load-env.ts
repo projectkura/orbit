@@ -3,15 +3,25 @@ import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { parse } from "dotenv"
 
-const moduleDir = dirname(fileURLToPath(import.meta.url))
-const projectRoot = resolve(moduleDir, "../../..")
-
-let envLoaded = false
-
-// Detect Cloudflare Workers runtime (no filesystem available)
+// Detect Cloudflare Workers runtime — no filesystem, no .env files
+// navigator.userAgent is "Cloudflare-Workers" in Workers runtime
 const isWorkersRuntime =
   typeof globalThis.caches !== "undefined" &&
-  typeof process === "undefined"
+  typeof navigator !== "undefined" &&
+  navigator.userAgent === "Cloudflare-Workers"
+
+let projectRoot = ""
+
+if (!isWorkersRuntime) {
+  try {
+    const moduleDir = dirname(fileURLToPath(import.meta.url))
+    projectRoot = resolve(moduleDir, "../../..")
+  } catch {
+    // import.meta.url may be undefined in some runtimes
+  }
+}
+
+let envLoaded = false
 
 function loadFile(path: string, inheritedKeys: ReadonlySet<string>) {
   if (!existsSync(path)) {
