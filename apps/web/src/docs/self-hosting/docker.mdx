@@ -9,14 +9,14 @@ The recommended self-host setup is `docker-compose.selfhost.yml` in the repo roo
 
 ## Stack
 
-The compose file starts four services:
+The compose file starts two services:
 
 | Service | Image | Purpose |
 | --- | --- | --- |
-| `db` | `postgres:15-alpine` | PostgreSQL source of truth |
-| `dragonfly` | `docker.dragonflydb.io/dragonflydb/dragonfly` | Rate limit cache |
-| `api` | `ghcr.io/kura-labs/orbit-api` | REST API + auth |
-| `web` | `ghcr.io/kura-labs/orbit-web` | React dashboard |
+| `db` | `postgres:16-alpine` | PostgreSQL source of truth |
+| `app` | `ghcr.io/projectkura/orbit` | Orbit (dashboard + API + auth) |
+
+A Dragonfly (Redis-compatible) cache is optional for enhanced rate limiting.
 
 ## Quick start
 
@@ -26,19 +26,15 @@ cp .env.example .env
 docker compose -f docker-compose.selfhost.yml up -d
 ```
 
-Migrations run automatically on first boot.
+Migrations run automatically on first API request.
 
 ## Reverse proxy
 
 Use Nginx or Caddy to terminate SSL:
 
 ```
-api.example.com {
-  reverse_proxy api:3001
-}
-
-app.example.com {
-  reverse_proxy web:3000
+orbit.example.com {
+  reverse_proxy app:3000
 }
 ```
 
@@ -47,5 +43,4 @@ app.example.com {
 ```bash
 docker compose -f docker-compose.selfhost.yml pull
 docker compose -f docker-compose.selfhost.yml up -d
-docker compose -f docker-compose.selfhost.yml exec api bun run db:migrate
 ```

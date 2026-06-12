@@ -1,6 +1,7 @@
 import { Hono } from "hono"
 import { handleRequest } from "./router"
 import { getCorsOrigin } from "./routes/utils"
+import { prepareApiRuntime } from "./runtime"
 
 const app = new Hono()
 
@@ -24,14 +25,7 @@ app.all("*", async (c) => {
   return handleRequest(request)
 })
 
-const isCloudflareWorker = typeof globalThis.caches !== "undefined"
-
-if (!isCloudflareWorker) {
-  const { runDatabaseMigrations } = await import("./lib/db/migrations")
-  const { getDragonflyClient } = await import("./lib/core/dragonfly")
-  await runDatabaseMigrations()
-  getDragonflyClient()
-}
+await prepareApiRuntime()
 
 export default {
   port: Number(process.env.PORT) || 3001,

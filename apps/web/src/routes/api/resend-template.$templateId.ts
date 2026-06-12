@@ -1,11 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { getWebServerEnv } from "@/lib/server-env"
+import { dispatchApiRequest } from "@/lib/api-dispatch"
 
 export const Route = createFileRoute("/api/resend-template/$templateId")({
   server: {
     handlers: {
       GET: async ({ request }: { request: Request }) => {
-        const webServerEnv = getWebServerEnv()
         const url = new URL(request.url)
         const templateId = decodeURIComponent(
           url.pathname.slice("/api/resend-template/".length)
@@ -21,22 +20,10 @@ export const Route = createFileRoute("/api/resend-template/$templateId")({
           )
         }
 
-        const response = await fetch(
-          `${webServerEnv.apiUrl}/api/v1/admin/resend/templates/${encodeURIComponent(
-            templateId
-          )}`,
-          {
-            method: "GET",
-            headers: {
-              Cookie: request.headers.get("cookie") ?? "",
-            },
-          }
+        return dispatchApiRequest(
+          request,
+          `/api/v1/admin/resend/templates/${encodeURIComponent(templateId)}`
         )
-
-        return new Response(response.body, {
-          status: response.status,
-          headers: response.headers,
-        })
       },
     },
   },

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { getWebServerEnv } from "@/lib/server-env"
+import { dispatchApiRequest } from "@/lib/api-dispatch"
 
 export const Route = createFileRoute(
   "/api/workspaces/$identifier/api-keys/$keyId"
@@ -13,19 +13,10 @@ export const Route = createFileRoute(
         request: Request
         params: { identifier: string; keyId: string }
       }) => {
-        const webServerEnv = getWebServerEnv()
-        const response = await fetch(
-          `${webServerEnv.apiUrl}/api/v1/workspaces/${encodeURIComponent(params.identifier)}/api-keys/${encodeURIComponent(params.keyId)}`,
-          {
-            method: "DELETE",
-            headers: request.headers,
-          }
+        return dispatchApiRequest(
+          request,
+          `/api/v1/workspaces/${encodeURIComponent(params.identifier)}/api-keys/${encodeURIComponent(params.keyId)}`
         )
-
-        return new Response(response.body, {
-          status: response.status,
-          headers: response.headers,
-        })
       },
     },
   },

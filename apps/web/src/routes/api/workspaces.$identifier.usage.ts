@@ -1,23 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { getWebServerEnv } from "@/lib/server-env"
+import { dispatchApiRequest } from "@/lib/api-dispatch"
 
 export const Route = createFileRoute("/api/workspaces/$identifier/usage")({
   server: {
     handlers: {
       GET: async ({ request, params }: { request: Request; params: { identifier: string } }) => {
-        const webServerEnv = getWebServerEnv()
-        const response = await fetch(
-          `${webServerEnv.apiUrl}/api/v1/workspaces/${params.identifier}/usage`,
-          {
-            method: "GET",
-            headers: request.headers,
-          }
+        return dispatchApiRequest(
+          request,
+          `/api/v1/workspaces/${encodeURIComponent(params.identifier)}/usage`
         )
-
-        return new Response(response.body, {
-          status: response.status,
-          headers: response.headers,
-        })
       },
     },
   },

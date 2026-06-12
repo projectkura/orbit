@@ -1,45 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { getWebServerEnv } from "@/lib/server-env"
+import { dispatchApiRequest } from "@/lib/api-dispatch"
 
 export const Route = createFileRoute("/api/instance-config")({
   server: {
     handlers: {
       GET: async ({ request }: { request: Request }) => {
-        const webServerEnv = getWebServerEnv()
-        const response = await fetch(
-          `${webServerEnv.apiUrl}/api/v1/admin/instance-config`,
-          {
-            method: "GET",
-            headers: {
-              Cookie: request.headers.get("cookie") ?? "",
-            },
-          }
-        )
-
-        return new Response(response.body, {
-          status: response.status,
-          headers: response.headers,
-        })
+        return dispatchApiRequest(request, "/api/v1/admin/instance-config")
       },
       POST: async ({ request }: { request: Request }) => {
-        const webServerEnv = getWebServerEnv()
-        const response = await fetch(
-          `${webServerEnv.apiUrl}/api/v1/admin/instance-config`,
-          {
+        return dispatchApiRequest(
+          new Request(request.url, {
             method: "PUT",
-            headers: {
-              Cookie: request.headers.get("cookie") ?? "",
-              "Content-Type":
-                request.headers.get("content-type") ?? "application/json",
-            },
+            headers: request.headers,
             body: await request.text(),
-          }
+          }),
+          "/api/v1/admin/instance-config"
         )
-
-        return new Response(response.body, {
-          status: response.status,
-          headers: response.headers,
-        })
       },
     },
   },

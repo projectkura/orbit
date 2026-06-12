@@ -1,6 +1,5 @@
 param(
-  [string]$WebTag = "orbit-web:local",
-  [string]$ApiTag = "orbit-api:local",
+  [string]$ImageTag = "orbit:local",
   [switch]$PullBase
 )
 
@@ -31,14 +30,9 @@ if ($PullBase) {
 
 Write-Host "==> Note: the first bun install inside Docker can be quiet for a while before verbose package logs appear."
 
-Invoke-CheckedCommand -Description "Building web image: $WebTag" -Command {
-  docker build --progress plain @PullArgs -f "$RepoRoot/apps/web/Dockerfile" -t $WebTag $RepoRoot
-}
-
-Invoke-CheckedCommand -Description "Building api image: $ApiTag" -Command {
-  docker build --progress plain @PullArgs -f "$RepoRoot/apps/api/Dockerfile" -t $ApiTag $RepoRoot
+Invoke-CheckedCommand -Description "Building image: $ImageTag" -Command {
+  docker build --progress plain @PullArgs -f "$RepoRoot/apps/web/Dockerfile" -t $ImageTag $RepoRoot
 }
 
 Write-Host "==> Done"
-Write-Host "   Web: $WebTag"
-Write-Host "   API: $ApiTag"
+Write-Host "   Image: $ImageTag"

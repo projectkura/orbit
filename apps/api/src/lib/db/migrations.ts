@@ -1,29 +1,10 @@
 import { createHash } from "node:crypto"
+import { readFileSync } from "node:fs"
+import { resolve } from "node:path"
 import { migrate } from "drizzle-orm/node-postgres/migrator"
 import { db, drizzleDb } from "./connection"
 
-// @ts-ignore - JSON import
-import journal from "../../../drizzle/meta/_journal.json"
-
-// Bundle SQL files as static imports (inlined by the bundler at build time)
-// Each migration is dynamically imported to keep the bundle tree-shakeable
-const migrationModules: Record<string, { default: string }> = {}
-
-async function loadMigrationSql(tag: string): Promise<string> {
-  if (migrationModules[tag]) {
-    return migrationModules[tag].default
-  }
-
-  // Dynamic import for each migration SQL file
-  // The bundler will resolve these at build time
-  try {
-    const mod = await import(`../../../drizzle/${tag}.sql`)
-    migrationModules[tag] = mod
-    return mod.default
-  } catch {
-    return ""
-  }
-}
+const drizzleDir = resolve(import.meta.dirname, "../../../../drizzle")
 
 type MigrationJournal = {
   entries: Array<{
@@ -34,12 +15,23 @@ type MigrationJournal = {
   }>
 }
 
+function readJournal(): MigrationJournal {
+  const path = resolve(drizzleDir, "meta/_journal.json")
+  return JSON.parse(readFileSync(path, "utf-8"))
+}
+
+function readMigrationSql(tag: string): string {
+  const path = resolve(drizzleDir, `${tag}.sql`)
+  return readFileSync(path, "utf-8")
+}
+
 async function readMigrationHashes() {
-  const entries = (journal as MigrationJournal).entries ?? []
+  const journal = readJournal()
+  const entries = journal.entries ?? []
 
   const hashes = await Promise.all(
     entries.map(async (entry) => {
-      const contents = await loadMigrationSql(entry.tag)
+      const contents = readMigrationSql(entry.tag)
       return {
         tag: entry.tag,
         hash: createHash("sha256").update(contents).digest("hex"),
@@ -64,5 +56,5 @@ export async function getMigrationState() {
 }
 
 export async function runDatabaseMigrations() {
-  await migrate(drizzleDb, { migrationsFolder: "../../../drizzle" })
+  await migrate(drizzleDb, { migrationsFolder: drizzleDir })
 }

@@ -14,6 +14,7 @@ import { Route as RecoveryRouteImport } from './routes/recovery'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PostAuthRouteImport } from './routes/post-auth'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as HealthRouteImport } from './routes/health'
 import { Route as BootRouteImport } from './routes/boot'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as DocsRouteRouteImport } from './routes/docs/route'
@@ -41,6 +42,7 @@ import { Route as AppIdentifierSettingsRouteImport } from './routes/app/$identif
 import { Route as AppIdentifierOverviewRouteImport } from './routes/app/$identifier/overview'
 import { Route as AppIdentifierApiKeysRouteImport } from './routes/app/$identifier/api-keys'
 import { Route as ApiWorkspacesIdentifierRouteImport } from './routes/api/workspaces.$identifier'
+import { Route as ApiV1SplatRouteImport } from './routes/api/v1/$'
 import { Route as ApiResendTemplateTemplateIdRouteImport } from './routes/api/resend-template.$templateId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAdminWorkspacesRouteImport } from './routes/api/admin.workspaces'
@@ -79,6 +81,11 @@ const PostAuthRoute = PostAuthRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HealthRoute = HealthRouteImport.update({
+  id: '/health',
+  path: '/health',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BootRoute = BootRouteImport.update({
@@ -216,6 +223,11 @@ const ApiWorkspacesIdentifierRoute = ApiWorkspacesIdentifierRouteImport.update({
   path: '/$identifier',
   getParentRoute: () => ApiWorkspacesRoute,
 } as any)
+const ApiV1SplatRoute = ApiV1SplatRouteImport.update({
+  id: '/api/v1/$',
+  path: '/api/v1/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiResendTemplateTemplateIdRoute =
   ApiResendTemplateTemplateIdRouteImport.update({
     id: '/api/resend-template/$templateId',
@@ -304,6 +316,7 @@ export interface FileRoutesByFullPath {
   '/docs': typeof DocsRouteRouteWithChildren
   '/account': typeof AccountRoute
   '/boot': typeof BootRoute
+  '/health': typeof HealthRoute
   '/login': typeof LoginRoute
   '/post-auth': typeof PostAuthRoute
   '/privacy': typeof PrivacyRoute
@@ -329,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/workspaces': typeof ApiAdminWorkspacesRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/resend-template/$templateId': typeof ApiResendTemplateTemplateIdRoute
+  '/api/v1/$': typeof ApiV1SplatRoute
   '/api/workspaces/$identifier': typeof ApiWorkspacesIdentifierRouteWithChildren
   '/app/$identifier/api-keys': typeof AppIdentifierApiKeysRoute
   '/app/$identifier/overview': typeof AppIdentifierOverviewRoute
@@ -349,6 +363,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/boot': typeof BootRoute
+  '/health': typeof HealthRoute
   '/login': typeof LoginRoute
   '/post-auth': typeof PostAuthRoute
   '/privacy': typeof PrivacyRoute
@@ -374,6 +389,7 @@ export interface FileRoutesByTo {
   '/api/admin/workspaces': typeof ApiAdminWorkspacesRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/resend-template/$templateId': typeof ApiResendTemplateTemplateIdRoute
+  '/api/v1/$': typeof ApiV1SplatRoute
   '/api/workspaces/$identifier': typeof ApiWorkspacesIdentifierRouteWithChildren
   '/app/$identifier/api-keys': typeof AppIdentifierApiKeysRoute
   '/app/$identifier/overview': typeof AppIdentifierOverviewRoute
@@ -398,6 +414,7 @@ export interface FileRoutesById {
   '/docs': typeof DocsRouteRouteWithChildren
   '/account': typeof AccountRoute
   '/boot': typeof BootRoute
+  '/health': typeof HealthRoute
   '/login': typeof LoginRoute
   '/post-auth': typeof PostAuthRoute
   '/privacy': typeof PrivacyRoute
@@ -423,6 +440,7 @@ export interface FileRoutesById {
   '/api/admin/workspaces': typeof ApiAdminWorkspacesRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/resend-template/$templateId': typeof ApiResendTemplateTemplateIdRoute
+  '/api/v1/$': typeof ApiV1SplatRoute
   '/api/workspaces/$identifier': typeof ApiWorkspacesIdentifierRouteWithChildren
   '/app/$identifier/api-keys': typeof AppIdentifierApiKeysRoute
   '/app/$identifier/overview': typeof AppIdentifierOverviewRoute
@@ -448,6 +466,7 @@ export interface FileRouteTypes {
     | '/docs'
     | '/account'
     | '/boot'
+    | '/health'
     | '/login'
     | '/post-auth'
     | '/privacy'
@@ -473,6 +492,7 @@ export interface FileRouteTypes {
     | '/api/admin/workspaces'
     | '/api/auth/$'
     | '/api/resend-template/$templateId'
+    | '/api/v1/$'
     | '/api/workspaces/$identifier'
     | '/app/$identifier/api-keys'
     | '/app/$identifier/overview'
@@ -493,6 +513,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/boot'
+    | '/health'
     | '/login'
     | '/post-auth'
     | '/privacy'
@@ -518,6 +539,7 @@ export interface FileRouteTypes {
     | '/api/admin/workspaces'
     | '/api/auth/$'
     | '/api/resend-template/$templateId'
+    | '/api/v1/$'
     | '/api/workspaces/$identifier'
     | '/app/$identifier/api-keys'
     | '/app/$identifier/overview'
@@ -541,6 +563,7 @@ export interface FileRouteTypes {
     | '/docs'
     | '/account'
     | '/boot'
+    | '/health'
     | '/login'
     | '/post-auth'
     | '/privacy'
@@ -566,6 +589,7 @@ export interface FileRouteTypes {
     | '/api/admin/workspaces'
     | '/api/auth/$'
     | '/api/resend-template/$templateId'
+    | '/api/v1/$'
     | '/api/workspaces/$identifier'
     | '/app/$identifier/api-keys'
     | '/app/$identifier/overview'
@@ -590,6 +614,7 @@ export interface RootRouteChildren {
   DocsRouteRoute: typeof DocsRouteRouteWithChildren
   AccountRoute: typeof AccountRoute
   BootRoute: typeof BootRoute
+  HealthRoute: typeof HealthRoute
   LoginRoute: typeof LoginRoute
   PostAuthRoute: typeof PostAuthRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -604,6 +629,7 @@ export interface RootRouteChildren {
   ApiAdminWorkspacesRoute: typeof ApiAdminWorkspacesRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiResendTemplateTemplateIdRoute: typeof ApiResendTemplateTemplateIdRoute
+  ApiV1SplatRoute: typeof ApiV1SplatRoute
   ApiUsersMeOnboardingRoute: typeof ApiUsersMeOnboardingRoute
 }
 
@@ -642,6 +668,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/health': {
+      id: '/health'
+      path: '/health'
+      fullPath: '/health'
+      preLoaderRoute: typeof HealthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/boot': {
@@ -832,6 +865,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/workspaces/$identifier'
       preLoaderRoute: typeof ApiWorkspacesIdentifierRouteImport
       parentRoute: typeof ApiWorkspacesRoute
+    }
+    '/api/v1/$': {
+      id: '/api/v1/$'
+      path: '/api/v1/$'
+      fullPath: '/api/v1/$'
+      preLoaderRoute: typeof ApiV1SplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/resend-template/$templateId': {
       id: '/api/resend-template/$templateId'
@@ -1080,6 +1120,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocsRouteRoute: DocsRouteRouteWithChildren,
   AccountRoute: AccountRoute,
   BootRoute: BootRoute,
+  HealthRoute: HealthRoute,
   LoginRoute: LoginRoute,
   PostAuthRoute: PostAuthRoute,
   PrivacyRoute: PrivacyRoute,
@@ -1094,6 +1135,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminWorkspacesRoute: ApiAdminWorkspacesRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiResendTemplateTemplateIdRoute: ApiResendTemplateTemplateIdRoute,
+  ApiV1SplatRoute: ApiV1SplatRoute,
   ApiUsersMeOnboardingRoute: ApiUsersMeOnboardingRoute,
 }
 export const routeTree = rootRouteImport

@@ -47,7 +47,6 @@ import {
   getRuntimeInstanceConfig,
   saveRuntimeInstanceConfig,
 } from "./lib/core/config-store"
-import { getMigrationState } from "./lib/db/migrations"
 import { fetchResendTemplate, sendInstanceEmailSafe } from "./lib/email"
 import { isDragonflyConnected } from "./lib/core/dragonfly"
 import { apiEnv } from "./lib/core/env"
@@ -173,6 +172,7 @@ export async function handleRequest(request: Request) {
 
         if (databaseReachable) {
           try {
+            const { getMigrationState } = await import("./lib/db/migrations")
             migrations = await getMigrationState()
           } catch {
             migrations = { total: 0, pending: 0 }

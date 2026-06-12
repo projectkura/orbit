@@ -21,7 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Read version and commit hash from build-info.json
+      - name: Read version and commit hash
         id: version
         run: |
           VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('build-info.json','utf8')).version)")
@@ -42,25 +42,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract web metadata
-        id: meta_web
+      - name: Extract metadata
+        id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/orbit-web
+          images: ghcr.io/${{ github.repository_owner }}/orbit
           tags: |
             type=raw,value=${{ steps.version.outputs.version }}
             type=raw,value=latest
 
-      - name: Extract api metadata
-        id: meta_api
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository_owner }}/orbit-api
-          tags: |
-            type=raw,value=${{ steps.version.outputs.version }}
-            type=raw,value=latest
-
-      - name: Build and push web image
+      - name: Build and push image
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -68,24 +59,8 @@ jobs:
           push: true
           pull: true
           platforms: linux/amd64
-          tags: ${{ steps.meta_web.outputs.tags }}
-          labels: ${{ steps.meta_web.outputs.labels }}
-          build-args: |
-            ORBIT_VERSION=${{ steps.version.outputs.version }}
-            ORBIT_COMMIT=${{ steps.version.outputs.commit }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Build and push api image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./apps/api/Dockerfile
-          push: true
-          pull: true
-          platforms: linux/amd64
-          tags: ${{ steps.meta_api.outputs.tags }}
-          labels: ${{ steps.meta_api.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             ORBIT_VERSION=${{ steps.version.outputs.version }}
             ORBIT_COMMIT=${{ steps.version.outputs.commit }}

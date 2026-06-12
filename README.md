@@ -10,7 +10,7 @@ cp .env.example .env
 docker compose -f docker-compose.selfhost.yml up -d
 ```
 
-The stack starts PostgreSQL, Dragonfly (Redis-compatible cache), the API, and the web dashboard. Migrations run automatically on first boot.
+The stack starts PostgreSQL and the Orbit app. Migrations run automatically on first API request.
 
 ## API Reference
 
@@ -138,10 +138,10 @@ DATABASE_URL=postgresql://postgres:password@db:5432/orbit
 **Usually needed**
 
 ```env
-# Sibling subdomains (app + api)
+# Sibling subdomains (app + api) — only needed if web and API are on different origins
 ORBIT_COOKIE_DOMAIN=.example.com
 
-# Dragonfly cache (auto-configured in self-host compose)
+# Dragonfly cache (optional, enhances rate limiting)
 DRAGONFLY_URL=redis://dragonfly:6379
 ```
 
@@ -163,15 +163,14 @@ Navigate to **Admin → Settings → Rate Limits** to configure per-tier default
 
 | Service | Tech | Purpose |
 |---------|------|---------|
-| Web | React + Vite | Dashboard and same-origin proxy |
-| API | Hono + Drizzle | Auth, database, config, public API |
-| Cache | Dragonfly (Redis-compatible) | Real-time rate limit counters |
+| App | React + Vite + Hono | Dashboard, auth, API, config |
 | Database | PostgreSQL | Source of truth, schema, request logs |
+| Cache (optional) | Dragonfly (Redis-compatible) | Real-time rate limit counters |
 
 ### Monorepo Layout
 
-- `apps/web` — frontend and same-origin proxy routes
-- `apps/api` — auth, database, config, and public API
+- `apps/web` — frontend and same-origin server routes
+- `apps/api` — auth, database, config, and public API handlers
 - `packages/shared` — Zod schemas and types
 - `packages/config` — env loading and validation
 

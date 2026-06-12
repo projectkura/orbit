@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { getWebServerEnv } from "@/lib/server-env"
+import { dispatchApiRequest } from "@/lib/api-dispatch"
 
 export const Route = createFileRoute("/api/workspaces/$identifier/assets/intents")({
   server: {
@@ -11,20 +11,10 @@ export const Route = createFileRoute("/api/workspaces/$identifier/assets/intents
         request: Request
         params: { identifier: string }
       }) => {
-        const webServerEnv = getWebServerEnv()
-        const response = await fetch(
-          `${webServerEnv.apiUrl}/api/v1/workspaces/${params.identifier}/assets/intents`,
-          {
-            method: "POST",
-            headers: request.headers,
-            body: await request.text(),
-          }
+        return dispatchApiRequest(
+          request,
+          `/api/v1/workspaces/${encodeURIComponent(params.identifier)}/assets/intents`
         )
-
-        return new Response(response.body, {
-          status: response.status,
-          headers: response.headers,
-        })
       },
     },
   },

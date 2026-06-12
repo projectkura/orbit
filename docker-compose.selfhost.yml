@@ -14,8 +14,8 @@ services:
       timeout: 5s
       retries: 10
 
-  api:
-    image: ${ORBIT_API_IMAGE:-ghcr.io/projectkura/orbit-api:latest}
+  app:
+    image: ${ORBIT_IMAGE:-ghcr.io/projectkura/orbit:latest}
     restart: unless-stopped
     env_file:
       - ./.env
@@ -25,7 +25,7 @@ services:
     environment:
       ORBIT_APP_NAME: ${ORBIT_APP_NAME:-Orbit}
       ORBIT_CONFIG_MODE: ${ORBIT_CONFIG_MODE:-memory}
-      ORBIT_API_PORT: 3001
+      PORT: 3000
       ORBIT_API_URL: ${ORBIT_API_URL}
       ORBIT_WEB_URL: ${ORBIT_WEB_URL}
       ORBIT_COOKIE_DOMAIN: ${ORBIT_COOKIE_DOMAIN:-}
@@ -47,18 +47,11 @@ services:
       CFX_USERINFO_URL: ${CFX_USERINFO_URL:-}
       CFX_SCOPES: ${CFX_SCOPES:-openid,profile,email}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
-    ports:
-      - "3001:3001"
-
-  web:
-    image: ${ORBIT_WEB_IMAGE:-ghcr.io/projectkura/orbit-web:latest}
-    restart: unless-stopped
-    env_file:
-      - ./.env
-    depends_on:
-      - api
-    environment:
-      ORBIT_API_INTERNAL_URL: http://api:3001
+      S3_ENDPOINT: ${S3_ENDPOINT:-}
+      S3_REGION: ${S3_REGION:-auto}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:-orbit-assets}
     ports:
       - "3000:3000"
 
