@@ -4,7 +4,7 @@ import { resolve } from "node:path"
 import { migrate } from "drizzle-orm/node-postgres/migrator"
 import { db, drizzleDb } from "./connection"
 
-const drizzleDir = resolve(import.meta.dirname, "../../../../drizzle")
+const drizzleDir = resolve(import.meta.dirname, "../../../drizzle")
 
 type MigrationJournal = {
   entries: Array<{
